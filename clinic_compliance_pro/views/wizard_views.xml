@@ -1,0 +1,30 @@
+<odoo>
+  <record id="view_compliance_wizard_form" model="ir.ui.view">
+    <field name="name">compliance.wizard.form</field>
+    <field name="model">clinic.compliance.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Create Compliance from Template">
+        <group>
+          <field name="ohc_id" string="Select OHC"/>
+          <field name="template_id" string="Select Template"/>
+        </group>
+        <footer>
+          <button name="action_create_records" type="object"
+            string="Create Records" class="btn-primary"/>
+          <button string="Cancel" class="btn-secondary" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_compliance_wizard" model="ir.actions.act_window">
+    <field name="name">Create from Template</field>
+    <field name="res_model">clinic.compliance.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+  <menuitem id="menu_compliance_wizard" name="Create from Template"
+    parent="menu_compliance_root"
+    action="action_compliance_wizard" sequence="5"/>
+</odoo>

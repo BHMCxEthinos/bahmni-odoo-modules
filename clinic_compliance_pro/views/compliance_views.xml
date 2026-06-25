@@ -1,0 +1,98 @@
+<odoo>
+  <record id="action_compliance_master" model="ir.actions.act_window">
+    <field name="name">Compliance Masters</field>
+    <field name="res_model">clinic.compliance.master</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <record id="view_compliance_record_search" model="ir.ui.view">
+    <field name="name">compliance.record.search</field>
+    <field name="model">clinic.compliance.record</field>
+    <field name="arch" type="xml">
+      <search string="Search Compliance Records">
+        <field name="clinic_id" string="OHC"
+          filter_domain="[('clinic_id.name', 'ilike', self)]"/>
+        <field name="master_id" string="Compliance"/>
+        <field name="status" string="Status"/>
+        <filter name="filter_valid" string="Valid"
+          domain="[('status','=','green')]"/>
+        <filter name="filter_expiring" string="Expiring Soon"
+          domain="[('status','=','orange')]"/>
+        <filter name="filter_expired" string="Expired"
+          domain="[('status','=','red')]"/>
+        <group expand="0" string="Group By">
+          <filter name="group_by_ohc" string="OHC"
+            context="{'group_by': 'clinic_id'}"/>
+          <filter name="group_by_status" string="Status"
+            context="{'group_by': 'status'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <record id="view_compliance_record_tree" model="ir.ui.view">
+    <field name="name">compliance.record.tree</field>
+    <field name="model">clinic.compliance.record</field>
+    <field name="arch" type="xml">
+      <tree string="Compliance Records"
+        decoration-success="status=='green'"
+        decoration-warning="status=='orange'"
+        decoration-danger="status=='red'">
+        <field name="record_name" string="Name"/>
+        <field name="clinic_id" string="OHC"/>
+        <field name="master_id" string="Compliance"/>
+        <field name="expiry_date" string="Expiry Date"/>
+        <field name="status" string="Status"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_compliance_record_form" model="ir.ui.view">
+    <field name="name">compliance.record.form</field>
+    <field name="model">clinic.compliance.record</field>
+    <field name="arch" type="xml">
+      <form string="Compliance Record">
+        <sheet>
+          <group>
+            <group>
+              <field name="clinic_id" string="OHC"/>
+              <field name="master_id" string="Compliance"/>
+            </group>
+            <group>
+              <field name="expiry_date"/>
+              <field name="status" widget="statusbar"
+                statusbar_visible="green,orange,red"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Documents" name="documents">
+              <field name="document_ids" widget="many2many_binary"
+                string="Attach Documents"/>
+            </page>
+          </notebook>
+        </sheet>
+                <div class="oe_chatter">
+          <field name="message_follower_ids" widget="mail_followers"/>
+          <field name="activity_ids" widget="mail_activity"/>
+          <field name="message_ids" widget="mail_thread"/>
+        </div>
+
+      </form>
+    </field>
+  </record>
+
+  <record id="action_compliance_records" model="ir.actions.act_window">
+    <field name="name">Compliance Records</field>
+    <field name="res_model">clinic.compliance.record</field>
+    <field name="view_mode">tree,form</field>
+    <field name="search_view_id" ref="view_compliance_record_search"/>
+  </record>
+
+  <menuitem id="menu_compliance_root" name="OHC Compliance" sequence="100"/>
+  <menuitem id="menu_compliance_records" name="Compliance Records"
+    parent="menu_compliance_root"
+    action="action_compliance_records" sequence="1"/>
+  <menuitem id="menu_compliance_master" name="Compliance Masters"
+    parent="menu_compliance_root"
+    action="action_compliance_master" sequence="2"/>
+</odoo>

@@ -1,0 +1,1 @@
+<odoo><record id='group_compliance_admin' model='res.groups'><field name='name'>Compliance Admin</field></record></odoo>

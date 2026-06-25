@@ -1,0 +1,47 @@
+<odoo>
+  <record id="view_compliance_template_tree" model="ir.ui.view">
+    <field name="name">compliance.template.tree</field>
+    <field name="model">clinic.compliance.template</field>
+    <field name="arch" type="xml">
+      <tree string="Compliance Templates">
+        <field name="name" string="Template Name"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_compliance_template_form" model="ir.ui.view">
+    <field name="name">compliance.template.form</field>
+    <field name="model">clinic.compliance.template</field>
+    <field name="arch" type="xml">
+      <form string="Compliance Template">
+        <sheet>
+          <group>
+            <field name="name" string="Template Name"/>
+          </group>
+          <notebook>
+            <page string="Compliances" name="compliances">
+              <field name="compliance_ids">
+                <tree>
+                  <field name="name" string="Compliance Name"/>
+                  <field name="category" string="Category"/>
+                  <field name="period_days" string="Re-check Period (Days)"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_compliance_templates" model="ir.actions.act_window">
+    <field name="name">Compliance Templates</field>
+    <field name="res_model">clinic.compliance.template</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_compliance_templates" name="Templates"
+    parent="menu_compliance_root"
+    action="action_compliance_templates"
+    sequence="3"/>
+</odoo>
