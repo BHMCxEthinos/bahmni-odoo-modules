@@ -1,0 +1,28 @@
+<odoo>
+
+    <record id="group_ohc_master" model="res.groups">
+        <field name="name">OHC Master</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="group_ohc_ops_head" model="res.groups">
+        <field name="name">OHC Ops Head</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="group_ohc_nurse" model="res.groups">
+        <field name="name">OHC Nurse</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="group_ohc_doctor" model="res.groups">
+        <field name="name">OHC Doctor</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="group_ohc_driver" model="res.groups">
+        <field name="name">OHC Driver</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+</odoo>

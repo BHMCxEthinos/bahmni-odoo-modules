@@ -1,0 +1,14 @@
+.oe_stat_button {
+    min-width: 170px !important;
+}
+
+.oe_stat_button .o_stat_value {
+    white-space: normal !important;
+    word-break: break-word;
+    font-size: 11px;
+    line-height: 14px;
+}
+
+.oe_stat_button .o_stat_text {
+    white-space: normal !important;
+}

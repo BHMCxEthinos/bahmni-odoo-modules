@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ohc_management_master,access_ohc_management_master,model_ohc_management,ohc_management.group_ohc_master,1,1,1,1
+access_ohc_staff_line,access_ohc_staff_line,model_ohc_staff_line,,1,1,1,1
+access_ohc_stock_line,access_ohc_stock_line,model_ohc_stock_line,,1,1,1,1
+access_ohc_ops_head,ohc.ops.head,model_ohc_management,ohc_management.group_ohc_ops_head,1,1,1,1
+access_ohc_nurse,ohc.nurse,model_ohc_management,ohc_management.group_ohc_nurse,1,0,0,0
+access_ohc_doctor,ohc.doctor,model_ohc_management,ohc_management.group_ohc_doctor,1,0,0,0
+access_ohc_driver,ohc.driver,model_ohc_management,ohc_management.group_ohc_driver,1,0,0,0
+access_survey_selection_wizard,survey.selection.wizard,model_survey_selection_wizard,,1,1,1,1

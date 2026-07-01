@@ -1,0 +1,116 @@
+<odoo>
+
+    <record id="view_picking_form_ohc_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.form.ohc.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+
+        <field name="arch" type="xml">
+
+         
+            <xpath expr="//field[@name='picking_type_id']" position="before">
+                <field name="ohc_warehouse_id" invisible="1"/>
+            </xpath>
+
+         
+            <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                <attribute name="domain">
+                    [('warehouse_id', '=', ohc_warehouse_id)]
+                </attribute>
+            </xpath>
+
+          
+   
+            <xpath expr="//field[@name='location_id']" position="attributes">
+                <attribute name="domain">
+                    [
+                        ('id', 'child_of', context.get('ohc_root_location_id')),
+                        ('usage', '=', 'internal')
+                    ]
+                </attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='location_dest_id']" position="attributes">
+                <attribute name="domain">
+                    [
+                        ('id', 'child_of', context.get('ohc_root_location_id')),
+                        ('usage', '=', 'internal')
+                    ]
+                </attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_stock_picking_form_inherit_ohc" model="ir.ui.view">
+    <field name="name">stock.picking.form.inherit.ohc</field>
+    <field name="model">stock.picking</field>
+    <field name="inherit_id" ref="stock.view_picking_form"/>
+    <field name="arch" type="xml">
+
+        <xpath expr="//field[@name='partner_id']/.." position="replace">
+
+            <group>
+
+               
+                      <field name="ohc_warehouse_id" invisible="1"/>
+                <field name="picking_type_id"
+                    domain="[('warehouse_id', '=', ohc_warehouse_id)]"
+                    attrs="{
+                        'invisible': [('hide_picking_type', '=', True)],
+                        'readonly': [('state', '!=', 'draft')]
+                    }"/>
+
+                <!-- Contact Label -->
+                <div class="o_td_label">
+                    <label for="partner_id"
+                        string="Delivery Address"
+                        style="font-weight:bold;"
+                        attrs="{'invisible':[('picking_type_code','!=','outgoing')]}"/>
+
+                    <label for="partner_id"
+                        string="Receive From"
+                        style="font-weight:bold;"
+                        attrs="{'invisible':[('picking_type_code','!=','incoming')]}"/>
+
+                    <label for="partner_id"
+                        string="Contact"
+                        style="font-weight:bold;"
+                        attrs="{'invisible':[('picking_type_code','in',['incoming','outgoing'])]}"/>
+                </div>
+
+                <!-- Contact -->
+                <field name="partner_id"
+                       nolabel="1"
+                       domain="[('is_company','=',True)]"/>
+
+                <!-- Remaining original fields -->
+                <field name="location_id"
+                       groups="!stock.group_stock_multi_locations"
+                       invisible="1"/>
+
+                <field name="location_dest_id"
+                       groups="!stock.group_stock_multi_locations"
+                       invisible="1"/>
+
+                <field name="location_id"
+                       groups="stock.group_stock_multi_locations"
+                       options="{'no_create': True}"
+                       attrs="{'invisible':[('picking_type_code','=','incoming')]}"/>
+
+                <field name="location_dest_id"
+                       groups="stock.group_stock_multi_locations"
+                       options="{'no_create': True}"
+                       attrs="{'invisible':[('picking_type_code','=','outgoing')]}"/>
+
+                <field name="backorder_id"
+                       attrs="{'invisible':[('backorder_id','=',False)]}"/>
+
+            </group>
+
+        </xpath>
+
+    </field>
+</record>
+
+</odoo>

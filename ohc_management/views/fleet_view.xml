@@ -1,0 +1,71 @@
+<odoo>
+
+<record id="fleet_vehicle_form_maintenance_inherit"
+        model="ir.ui.view">
+
+    <field name="name">
+        fleet.vehicle.form.maintenance.inherit
+    </field>
+
+    <field name="model">fleet.vehicle</field>
+
+    <field name="inherit_id"
+           ref="fleet.fleet_vehicle_view_form"/>
+
+    <field name="arch" type="xml">
+
+
+        <xpath expr="//notebook" position="inside">
+
+            <page string="Maintenance"
+                  name="maintenance">
+
+                <group>
+
+                    <!-- <field name="maintenance_start_date"/> -->
+                    <field name="next_action_date"
+                           readonly="1"/>
+
+                    <label for="period"
+                           string="Preventive Maintenance Frequency"/>
+
+                    <div class="o_row">
+
+                        <field name="period"/>
+
+                        <span>
+                            days
+                        </span>
+
+                    </div>
+
+
+
+
+                    <label for="maintenance_duration"
+                           string="Maintenance Duration"/>
+
+                    <div class="o_row">
+
+                        <field name="maintenance_duration"/>
+
+                        <span>
+                            hours
+                        </span>
+
+                    </div>
+
+
+                </group>
+
+
+            </page>
+
+        </xpath>
+
+
+    </field>
+
+</record>
+
+</odoo>

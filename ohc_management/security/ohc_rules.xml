@@ -1,0 +1,15 @@
+<odoo>
+
+    <record id="rule_ohc_nurse_own_ohc" model="ir.rule">
+        <field name="name">Nurse - Assigned OHCs</field>
+        <field name="model_id" ref="model_ohc_management"/>
+
+        <field name="groups"
+               eval="[(4, ref('ohc_management.group_ohc_nurse'))]"/>
+
+        <field name="domain_force">
+            [('id', 'in', user.employee_id.ohc_id.ids)]
+        </field>
+    </record>
+
+</odoo>

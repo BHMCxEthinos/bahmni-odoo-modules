@@ -1,0 +1,61 @@
+<odoo>
+<record id="action_clinic_survey" model="ir.actions.act_window">
+    <field name="name">Clinic Survey</field>
+    <field name="res_model">survey.survey</field>
+    <field name="view_mode">kanban,list,form</field>
+
+    
+    <field name="domain">[('survey_type','=','clinic')]</field>
+
+    <field name="context">{'default_survey_type':'clinic'}</field>
+</record>
+
+<record id="action_ambulance_survey" model="ir.actions.act_window">
+    <field name="name">Ambulance Survey</field>
+    <field name="res_model">survey.survey</field>
+    <field name="view_mode">kanban,list,form</field>
+
+
+    <field name="domain">[('survey_type','=','ambulance')]</field>
+
+  
+    <field name="context">{'default_survey_type':'ambulance'}</field>
+</record>
+
+
+<menuitem id="menu_clinic_survey"
+          name="Clinic Survey"
+          parent="survey.menu_surveys"
+          action="action_clinic_survey"
+          sequence="5"/>
+
+<menuitem id="menu_ambulance_survey"
+          name="Ambulance Survey"
+          parent="survey.menu_surveys"
+          action="action_ambulance_survey"
+          sequence="6"/>
+
+
+     <record id="survey_survey_form_inherit_ohc" model="ir.ui.view">
+
+        <field name="name">survey.survey.form.inherit.ohc</field>
+
+        <field name="model">survey.survey</field>
+
+        <field name="inherit_id" ref="survey.survey_survey_view_form"/>
+
+        <field name="arch"
+               type="xml">
+
+            <xpath expr="//field[@name='user_id']"
+                   position="after">
+
+                <field name="ohc_ids" widget="many2many_tags"/>
+
+            </xpath>
+
+        </field>
+
+    </record>
+
+</odoo>

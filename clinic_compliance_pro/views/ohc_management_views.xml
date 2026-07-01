@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_ohc_compliance_status" model="ir.ui.view">
+    <field name="name">ohc.management.compliance.status</field>
+    <field name="model">ohc.management</field>
+    <field name="inherit_id" ref="ohc_management.view_ohc_management_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//button[@name='action_open_documents']" position="replace">
+        <button type="object"
+          name="action_open_documents"
+          class="oe_stat_button"
+          icon="fa-file-text"
+          style="min-width:120px;">
+          <div class="o_stat_info text-center">
+            <span class="o_stat_value">
+              <field name="compliance_document_count"/>
+            </span>
+            <span class="o_stat_text">Compliance</span>
+            <field name="compliance_status" widget="badge"
+              decoration-success="compliance_status == 'green'"
+              decoration-warning="compliance_status == 'orange'"
+              decoration-danger="compliance_status == 'red'"/>
+          </div>
+        </button>
+      </xpath>
+    </field>
+  </record>
+</odoo>

@@ -1,0 +1,43 @@
+<odoo>
+
+    <record id="view_survey_selection_wizard"
+            model="ir.ui.view">
+
+        <field name="name">survey.selection.wizard.form</field>
+
+        <field name="model">survey.selection.wizard</field>
+
+        <field name="arch" type="xml">
+
+            <form string="Select Survey">
+
+                <group>
+
+                    <field name="ohc_id"/>
+
+
+                    <field name="survey_id"/>
+
+                </group>
+
+                <footer>
+
+                    <button
+                        name="action_open_survey"
+                        string="Open Checklist"
+                        type="object"
+                        class="btn-primary"/>
+
+                    <button
+                        string="Cancel"
+                        special="cancel"/>
+
+                </footer>
+
+            </form>
+
+        </field>
+
+    </record>
+
+</odoo>
