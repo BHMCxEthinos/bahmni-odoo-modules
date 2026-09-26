@@ -11,5 +11,154 @@
             [('id', 'in', user.employee_id.ohc_id.ids)]
         </field>
     </record>
+    
+
+    <record id="rule_ohc_driver_own_ohc" model="ir.rule">
+        <field name="name">Driver- Assigned OHCs</field>
+        <field name="model_id" ref="model_ohc_management"/>
+
+        <field name="groups"
+               eval="[(4, ref('ohc_management.group_ohc_driver'))]"/>
+
+        <field name="domain_force">
+            [('id', 'in', user.employee_id.ohc_id.ids)]
+        </field>
+
+    </record>
+    <record id="rule_ohc_driver_own_ohc" model="ir.rule">
+        <field name="name">Operation Head- Assigned OHCs</field>
+        <field name="model_id" ref="model_ohc_management"/>
+
+        <field name="groups"
+               eval="[(4, ref('ohc_management.group_ohc_ops_head'))]"/>
+
+        <field name="domain_force">
+            [('id', 'in', user.employee_id.ohc_id.ids)]
+        </field>
+
+    </record>
+       
+    <record id="rule_equipment_nurse_own_ohc" model="ir.rule">
+
+    <field name="name">
+        Nurse - Equipment of Assigned OHCs
+    </field>
+
+    <field name="model_id"
+           ref="maintenance.model_maintenance_equipment"/>
+
+    <field name="groups"
+           eval="[(4, ref('ohc_management.group_ohc_nurse'))]"/>
+
+    <field name="domain_force">
+        [('ohc_id', 'in', user.get_user_ohc_ids())]
+    </field>
+
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+
+    </record>
+   
+    
+<record id="maintenance.equipment_rule_user" model="ir.rule">
+    <field name="domain_force">
+        [('message_partner_ids', 'in', [user.partner_id.id])] if not user.has_group('ohc_management.group_ohc_nurse') and not user.has_group('ohc_management.group_ohc_doctor') and not user.has_group('ohc_management.group_ohc_driver') else [(0, '=', 1)]
+    </field>
+</record>
+<record id="hr.menu_hr_employee" model="ir.ui.menu">
+        <field name="groups_id"
+               eval="[(6, 0, [ref('hr.group_hr_user')])]"/>
+    </record>
+
+<!-- <record id="rule_fleet_vehicle_access_global" model="ir.rule">
+
+    <field name="name">
+        Fleet Vehicle: Nurse Assigned OHCs
+    </field>
+
+    <field name="model_id"
+           ref="fleet.model_fleet_vehicle"/>
+
+    
+    <field name="domain_force">
+        [('ohc_id', 'in', user.get_user_ohc_ids())]
+    </field>
+
+
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+
+</record> -->
+
+<record id="rule_fleet_vehicle_access_nurse" model="ir.rule">
+
+    <field name="name">
+        Fleet Vehicle: Nurse Assigned OHCs
+    </field>
+
+    <field name="model_id"
+           ref="fleet.model_fleet_vehicle"/>
+
+    <field name="groups"
+           eval="[(4, ref('ohc_management.group_ohc_nurse'))]"/>
+
+    <field name="domain_force">
+        [('ohc_id', 'in', user.get_user_ohc_ids())]
+    </field>
+
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+
+</record>
+
+<record id="rule_project_ohc_access_global" model="ir.rule">
+
+    <field name="name">Project: OHC Wise Restriction</field>
+
+    <field name="model_id"
+           ref="project.model_project_project"/>
+
+    <!-- Global rule - no groups field -->
+
+    <field name="domain_force">
+        [('ohc_id', 'in', user.get_user_ohc_ids())]
+    </field>
+
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+
+</record>
+
+<record id="rule_equipment_usage_access_global" model="ir.rule">
+
+    <field name="name">
+        Equipment Usage: Nurse Assigned OHCs
+    </field>
+
+    <field name="model_id"
+           ref="maintenance_equipment_usage.model_maintenance_equipment_usage"/>
+
+    <!-- <field name="groups"
+           eval="[(4, ref('ohc_management.group_fleet_ohc_nurse'))]"/> -->
+
+    <field name="domain_force">
+        [('equipment_id.ohc_id', 'in', user.get_user_ohc_ids())]
+    </field>
+
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+
+</record>
+
 
 </odoo>

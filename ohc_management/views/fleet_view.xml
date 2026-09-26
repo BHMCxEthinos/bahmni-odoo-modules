@@ -13,59 +13,112 @@
            ref="fleet.fleet_vehicle_view_form"/>
 
     <field name="arch" type="xml">
-
-
+              <xpath expr="//field[@name='vin_sn']" position="after">
+    <field name="ohc_purchase_date"/>
+</xpath>
         <xpath expr="//notebook" position="inside">
 
             <page string="Maintenance"
                   name="maintenance">
-
                 <group>
-
-                    <!-- <field name="maintenance_start_date"/> -->
+                    <field name="ohc_last_maintenance_date"/>
                     <field name="next_action_date"
                            readonly="1"/>
-
                     <label for="period"
                            string="Preventive Maintenance Frequency"/>
-
                     <div class="o_row">
-
                         <field name="period"/>
-
-                        <span>
-                            days
-                        </span>
-
+                        <span>days</span>
                     </div>
-
-
-
-
                     <label for="maintenance_duration"
                            string="Maintenance Duration"/>
-
                     <div class="o_row">
-
                         <field name="maintenance_duration"/>
-
-                        <span>
-                            hours
-                        </span>
-
+                        <span>hours</span>
                     </div>
-
-
+                    <field name="ohc_insurance_expiry_date"/>
+                    <field name="ohc_puc_validity_date"/>
                 </group>
-
-
             </page>
 
         </xpath>
 
-
     </field>
 
+</record>
+
+<!-- <record id="ohc_fleet_odometer_form" model="ir.ui.view">
+    <field name="name">ohc.fleet.odometer.form</field>
+    <field name="model">fleet.vehicle.odometer</field>
+    <field name="inherit_id" model="ir.ui.view" search="[('name','=','fleet.vehicle.odometer.form')]"/>
+    <field name="arch" type="xml">
+        <xpath expr="//form" position="attributes">
+            <attribute name="js_class">ohc_ambulance_log_no_autosave_form</attribute>
+        </xpath> 
+         OHC Filter on Vehicle dropdown 
+        <xpath expr="//field[@name='vehicle_id']" position="attributes">
+             <attribute name="domain">[('ohc_id', '=', context.get('default_ohc_id', False))]</attribute>
+        </xpath>
+        <xpath expr="//field[@name='date']" position="after">
+            <group string="Movement Details">
+                <field name="ohc_ambulance_movement"/>
+                <field name="ohc_movement_date"/>
+                <field name="ohc_movement_time"/>
+                <field name="ohc_patient_name"
+       attrs="{'invisible': [('ohc_ambulance_movement', '=', 'without_patient')],
+               'readonly': [('ohc_ambulance_movement', '=', 'without_patient')]}"/>
+                <field name="ohc_purpose"/>
+                <field name="ohc_destination"/>
+                <field name="ohc_notes"/>
+                <field name="ohc_driver_name" string="Driver Name"/>
+            </group>
+            <group string="Trip Details">
+                <field name="ohc_departure_time"/>
+                <field name="ohc_departure_start_km"/>
+                <field name="ohc_arrival_time"/>
+                <field name="ohc_arrival_end_km"/>
+                <field name="ohc_distance_travelled" readonly="1"/>
+            </group>
+        </xpath>
+    </field>
+</record> -->
+<record id="ohc_fleet_odometer_form" model="ir.ui.view">
+    <field name="name">ohc.fleet.odometer.form</field>
+    <field name="model">fleet.vehicle.odometer</field>
+    <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_form"/>
+    <field name="arch" type="xml">
+        
+        <!-- Vehicle dropdown domain filter -->
+        <xpath expr="//field[@name='vehicle_id']" position="attributes">
+             <attribute name="domain">[('ohc_id', '=', context.get('default_ohc_id', False))]</attribute>
+        </xpath>
+
+        <!-- Move the custom groups outside of the top field group -->
+        <xpath expr="//sheet/group[1]" position="after">
+            <group>
+                <group string="Movement Details">
+                    <field name="ohc_ambulance_movement"/>
+                    <field name="ohc_movement_date"/>
+                    <field name="ohc_movement_time"/>
+                    <field name="ohc_patient_name"
+                           attrs="{'invisible': [('ohc_ambulance_movement', '=', 'without_patient')],
+                                  'readonly': [('ohc_ambulance_movement', '=', 'without_patient')]}"/>
+                    <field name="ohc_purpose"/>
+                    <field name="ohc_destination"/>
+                    <field name="ohc_notes"/>
+                    <field name="ohc_driver_name" string="Driver Name"/>
+                </group>
+                <group string="Trip Details">
+                    <field name="ohc_departure_time"/>
+                    <field name="ohc_departure_start_km"/>
+                    <field name="ohc_arrival_time"/>
+                    <field name="ohc_arrival_end_km"/>
+                    <field name="ohc_distance_travelled" readonly="1"/>
+                </group>
+            </group>
+        </xpath>
+        
+    </field>
 </record>
 
 </odoo>

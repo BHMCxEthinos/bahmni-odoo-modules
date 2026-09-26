@@ -6,10 +6,18 @@ class ComplianceMaster(models.Model):
 
     name = fields.Char(string='Name', required=True)
     category = fields.Selection([
-    ('safety', 'Safety'),
-    ('medical', 'Medical'),
-    ('legal', 'Legal'),
-    ('environmental', 'Environmental'),
-    ('other', 'Other'),
-], string='Category', default='other')
+        ('safety', 'Safety'),
+        ('medical', 'Medical'),
+        ('legal', 'Legal'),
+        ('environmental', 'Environmental'),
+        ('other', 'Other'),
+    ], string='Category', default='other')
     period_days = fields.Integer(string='Re-check Period (Days)')
+
+    _sql_constraints = [
+        (
+            'unique_compliance_name',
+            'UNIQUE(name)',
+            'This Compliance Master already exists! Duplicate names are not allowed.'
+        )
+    ]

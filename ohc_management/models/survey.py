@@ -3,11 +3,27 @@ from odoo import models, fields,api
 class SurveySurvey(models.Model):
     _inherit = 'survey.survey'
 
-    survey_type = fields.Selection([
-        ('clinic', 'Clinic'),
-        ('ambulance', 'Ambulance')
-    ], string='Survey Type')
+    # survey_type = fields.Selection([
+    #     ('clinic', 'Clinic'),
+    #     ('ambulance', 'Ambulance')
+    # ], string='Survey Type')
 
+    survey_type = fields.Selection(
+        selection=[
+            ('common', 'Common'),
+            ('private', 'Private'),
+        ],
+        string='Type',
+    )
+
+    user_ids = fields.Many2many(
+    'res.users',
+    'survey_survey_res_users_rel',
+    'survey_id',
+    'user_id',
+    string='Responsible',
+    domain=[('share', '=', False)],
+)
     current_ohc_id = fields.Many2one(
         'ohc.management',
         string='Current OHC'
@@ -39,6 +55,13 @@ class SurveyUserInput(models.Model):
     ohc_id = fields.Many2one(
         'ohc.management',
         string='OHC'
+    )
+
+    survey_type = fields.Selection(
+        related='survey_id.survey_type',
+        string='Survey Type',
+        store=True,
+        readonly=True,
     )
 
     @api.model

@@ -39,36 +39,63 @@
         decoration-warning="status=='orange'"
         decoration-danger="status=='red'">
         <field name="record_name" string="Name"/>
+        <field name="create_date" string="Created On"/>
         <field name="clinic_id" string="OHC"/>
         <field name="master_id" string="Compliance"/>
         <field name="expiry_date" string="Expiry Date"/>
         <field name="status" string="Status"/>
+        <button name="action_request_edit" type="object" string="Edit"
+          icon="fa-pencil" title="Edit Record"/>
       </tree>
     </field>
   </record>
 
   <record id="view_compliance_record_form" model="ir.ui.view">
-    <field name="name">compliance.record.form</field>
-    <field name="model">clinic.compliance.record</field>
-    <field name="arch" type="xml">
-      <form string="Compliance Record">
-        <sheet>
-          <group>
-            <group>
-              <field name="clinic_id" string="OHC"/>
-              <field name="master_id" string="Compliance"/>
-            </group>
-            <group>
-              <field name="expiry_date"/>
-              <field name="status" widget="statusbar"
-                statusbar_visible="green,orange,red"/>
-            </group>
-          </group>
+  <field name="name">compliance.record.form</field>
+  <field name="model">clinic.compliance.record</field>
+  <field name="arch" type="xml">
+    <form string="Compliance Record">
+      <header>
+        <button name="action_refresh_record" type="object" string="Refresh"
+  icon="fa-refresh" class="btn-secondary"
+  attrs="{'invisible': [('id', '=', False)]}"/>      </header>
+      <sheet>
+  <field name="edit_unlocked" invisible="1"/>
+  <group>
+    <group>
+      <field name="clinic_id" string="OHC" required="1"
+        attrs="{'readonly': [('id','!=',False), ('edit_unlocked','=',False)]}"/>
+        <field name="master_id" string="Compliance" required="1"
+          attrs="{'readonly': [('id','!=',False), ('edit_unlocked','=',False)]}"/>
+      </group>
+      <group>
+        <field name="expiry_date" required="1"
+          attrs="{'readonly': [('id','!=',False), ('edit_unlocked','=',False)]}"/>
+        <field name="actual_renewal_date"
+          attrs="{'readonly': [('id','!=',False), ('edit_unlocked','=',False)]}"/>
+        <field name="status" widget="statusbar"
+          statusbar_visible="green,orange,red"/>
+      </group>
+    </group>
           <notebook>
-            <page string="Documents" name="documents">
-              <field name="document_ids" widget="many2many_binary"
-                string="Attach Documents"/>
-            </page>
+            <page string="Documents">
+    <field name="document_ids"
+       widget="many2many_binary"
+       string="Upload Documents"
+       attrs="{'readonly': [('id','!=',False), ('edit_unlocked','=',False)]}"/>
+
+<!-- File List with details -->
+<field name="document_ids"
+       widget="many2many"
+       nolabel="1"
+       attrs="{'readonly': [('id','!=',False), ('edit_unlocked','=',False)]}">
+        <tree create="0" editable="0">
+            <field name="name" string="File Name"/>
+            <field name="create_uid" string="Uploaded By"/>
+            <field name="create_date" string="Uploaded On"/>
+        </tree>
+    </field>
+</page>
           </notebook>
         </sheet>
                 <div class="oe_chatter">

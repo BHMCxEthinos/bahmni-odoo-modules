@@ -1,28 +1,124 @@
 <odoo>
+    <record id="module_category_ohc" model="ir.module.category">
+        <field name="name">OHC</field>
+        <field name="description">OHC Management Access Rights</field>
+        <field name="sequence">20</field>
+        <field name="exclusive">False</field>
+    </record>
 
     <record id="group_ohc_master" model="res.groups">
         <field name="name">OHC Master</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
+       <field name="category_id" ref="ohc_management.module_category_ohc"/>
     </record>
 
     <record id="group_ohc_ops_head" model="res.groups">
         <field name="name">OHC Ops Head</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
+         <field name="category_id" ref="ohc_management.module_category_ohc"/>
     </record>
 
     <record id="group_ohc_nurse" model="res.groups">
-        <field name="name">OHC Nurse</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="name">OHC Nurse / Doctor</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
     </record>
 
-    <record id="group_ohc_doctor" model="res.groups">
-        <field name="name">OHC Doctor</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
-    </record>
+    <!-- <record id="group_ohc_doctor" model="res.groups">
+        <field name="name">OHC Doctor test</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record> -->
 
     <record id="group_ohc_driver" model="res.groups">
         <field name="name">OHC Driver</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
     </record>
 
+    
+    <record id="group_equipment_user" model="res.groups">
+        <field name="name">Equipment User</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record>
+
+
+   
+  
+    <record id="maintenance.menu_equipment_form"
+        model="ir.ui.menu">
+    <field name="groups_id"
+           eval="[(4, ref('ohc_management.group_equipment_user'))]"/>
+    </record>
+
+        <record id="maintenance_equipment_usage.menu_maintenance_equipment_usage_action"
+                model="ir.ui.menu">
+            <field name="groups_id"
+                eval="[(4, ref('ohc_management.group_equipment_user'))]"/>
+        </record>
+    
+
+    <record id="group_ohc_employee_readonly" model="res.groups">
+        <field name="name">OHC Employee Read Only</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record>
+
+    
+    <record id="group_ohc_nurse" model="res.groups">
+        <field name="name">OHC Nurse / Doctor</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+
+        <field name="implied_ids" eval="[
+            (4, ref('ohc_management.group_ohc_employee_readonly')),
+            (4, ref('ohc_management.group_equipment_user'))
+        ]"/>
+    </record>
+
+    <record id="group_fleet_ohc_nurse" model="res.groups">
+        <field name="name">Fleet: OHC wise access</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record>
+
+    <record id="group_project_ohc_access" model="res.groups">
+        <field name="name">Project: OHC wise access</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record>
+
+    <record id="group_ohc_salesperson_readonly" model="res.groups">
+        <field name="name">OHC Salesperson</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record>
+
+
+    <record id="group_survey_checklist_readonly" model="res.groups">
+        <field name="name">Survey Checklist Button Invisible</field>
+        <!-- <field name="category_id" ref="ohc_management.module_category_ohc"/> -->
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record>
+
+    <record id="rule_stock_picking_block_write_ohc_salesperson" model="ir.rule">
+        <field name="name">OHC Salesperson - Block Write on Transfers</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="domain_force">
+            [(1, '=', 1)] if user.has_group('ohc_management.group_ohc_salesperson_readonly') else [(1, '=', 1)]
+        </field>
+        <field name="perm_read" eval="0"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="group_ohc_hr" model="res.groups">
+        <field name="name">OHC HR</field>
+        <field name="category_id" ref="ohc_management.module_category_ohc"/>
+    </record>
+
+     <!-- <record id="group_allow_import" model="res.groups">
+        <field name="name">Allow Import</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record> -->
+    <record id="group_allow_import" model="res.groups">
+    <field name="name">Allow Import</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+   <record id="group_allow_delete_option" model="res.groups">
+        <field name="name">Allow Delete Option</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
 </odoo>

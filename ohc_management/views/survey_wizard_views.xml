@@ -16,7 +16,8 @@
                     <field name="ohc_id"/>
 
 
-                    <field name="survey_id"/>
+                    <field name="survey_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                    
 
                 </group>
 

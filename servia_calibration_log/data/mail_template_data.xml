@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="email_template_calibration_reminder" model="mail.template">
+        <field name="name">Calibration Reminder</field>
+        <field name="model_id" ref="model_servia_calibration_log"/>
+        <field name="subject">Calibration due soon: {{ object.equipment_id.name }}</field>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+                <p>Hello,</p>
+                <p>
+                    The equipment <strong t-out="object.equipment_id.name or ''"/>
+                    is due for calibration on
+                    <strong t-out="format_date(object.next_due) or ''"/>.
+                </p>
+                <table style="border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 4px 12px 4px 0;"><strong>Equipment</strong></td>
+                        <td style="padding: 4px 0;" t-out="object.equipment_id.name or ''"/>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 12px 4px 0;"><strong>Last Calibration</strong></td>
+                        <td style="padding: 4px 0;" t-out="format_date(object.cal_date) or ''"/>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 12px 4px 0;"><strong>Next Due</strong></td>
+                        <td style="padding: 4px 0;" t-out="format_date(object.next_due) or ''"/>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 12px 4px 0;"><strong>Certificate No</strong></td>
+                        <td style="padding: 4px 0;" t-out="object.cert_no or 'N/A'"/>
+                    </tr>
+                </table>
+                <p>Please arrange calibration before the due date to stay audit-ready.</p>
+                <p>— Automated reminder from OHC / Equipment Calibration Log</p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

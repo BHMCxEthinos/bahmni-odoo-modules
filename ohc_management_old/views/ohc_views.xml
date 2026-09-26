@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+                      <!-- TREE VIEW -->
+  
+
+    <record id="view_ohc_management_tree" model="ir.ui.view">
+
+        <field name="name">ohc.management.tree</field>
+
+        <field name="model">ohc.management</field>
+
+        <field name="arch" type="xml">
+
+            <tree>
+
+                <field name="name"/>
+                <field name="ohc_id"/>
+                <field name="company_id"/>
+                <field name="state_id"/>
+                <field name="hr_contact_name"/>
+                <field name="operation_manager"/>
+                <field name="state"/>
+
+            </tree>
+
+        </field>
+
+    </record>
+
+
+
+    
+                            <!-- FORM VIEW -->
+
+    <record id="view_ohc_management_form" model="ir.ui.view">
+
+        <field name="name">ohc.management.form</field>
+
+        <field name="model">ohc.management</field>
+
+        <field name="arch" type="xml">
+
+            <form string="OHC">
+
+                <!-- HEADER -->
+
+                <header>
+
+                    <field name="state"
+                           widget="statusbar"
+                           options="{'clickable': 1}"
+                           statusbar_visible="onboarding,setup,audit,active,closed"/>
+
+                </header>
+
+
+
+                <sheet>
+
+                    <!-- SMART BUTTONS -->
+
+                    <div class="oe_button_box" name="button_box">
+
+                    
+                        <button
+                            type="object"
+                            name="action_open_checklist"
+                            class="oe_stat_button"
+                            icon="fa-list">
+
+                            <field name="last_checklist_date"
+                                widget="statinfo"
+                                string="Checklist"/>
+
+                        </button>
+
+
+                        <button type="object"
+                                name="action_open_stock"
+                                class="oe_stat_button"
+                                icon="fa-cubes" string="Current Stock"
+                                groups="!ohc_management.group_ohc_hr,!ohc_management.group_ohc_salesperson_readonly,!ohc_management.group_ohc_ops_head,!ohc_management.group_ohc_qa">
+
+                        
+
+                        </button>
+
+
+                        <button type="object"
+                                name="action_open_ambulance_log"
+                                class="oe_stat_button"
+                                icon="fa-ambulance" string="Ambulance Log">
+
+                        </button>
+
+
+                        <button type="object"
+                                name="action_open_helpdesk"
+                                class="oe_stat_button"
+                                icon="fa-life-ring">
+
+                            <field name="helpdesk_ticket_count"
+                                   widget="statinfo"
+                                   string="Helpdesk"/>
+
+                        </button>
+
+
+                        <button type="object"
+                        name="action_open_documents"
+                        class="oe_stat_button"
+                        icon="fa-file-text">
+                        <field name="compliance_document_count"
+                            widget="statinfo"
+                            string="Compliance"/>
+                    </button>  
+
+                     <button
+                        type="object"
+                        name="action_dispense_medicine"
+                        class="oe_stat_button"
+                        icon="fa-medkit"
+                        string="Dispense Medicine">
+                    </button>                    
+
+                    </div>
+
+
+
+                    <!-- TITLE -->
+
+                    <div class="oe_title">
+
+                        <label for="name"/>
+
+                        <h1>
+
+                            <field name="name"
+                                   placeholder="OHC Name"/>
+
+                        </h1>
+
+                    </div>
+
+
+
+
+                    <group col="2">
+
+                        
+
+<group>
+
+    <!-- Company -->
+
+    <field name="company_id" domain="[('is_company','=',True)]"
+           placeholder="select the customer"/>
+
+
+   
+                    <!-- ADDRESS -->
+    
+
+    <div class="o_form_label">
+    Address
+</div>
+    <div class="o_address_format">
+
+        <!-- Street -->
+
+        <field name="street"
+               placeholder="Street..."
+               class="o_address_street"/>
+
+        <!-- Street 2 -->
+
+        <field name="street2"
+               placeholder="Street 2..."
+               class="o_address_street"/>
+
+
+        <!-- City -->
+
+        <field name="city"
+               string="Village / City"
+               placeholder="Village / City"
+               class="o_address_city"/>
+
+
+        <!-- Sub District -->
+
+        <field name="sub_district"
+               placeholder="Sub-District"
+               class="o_address_city"/>
+
+
+        <!-- District -->
+
+        <field name="district"
+               placeholder="District"
+               class="o_address_city"/>
+
+
+        <!-- State -->
+
+        <field name="state_id"
+               placeholder="State"
+               class="o_address_state"
+               options="{'no_open': True}"/>
+
+
+        <!-- ZIP -->
+
+        <field name="zip"
+               placeholder="ZIP"
+               class="o_address_zip"/>
+
+
+        <!-- Country -->
+
+        <field name="country_id"
+               placeholder="Country"
+               class="o_address_country"
+               options="{'no_open': True}"/>
+
+    </div>
+
+
+   
+                    <!-- OHC DETAILS -->
+   
+
+    <field name="ohc_id"/>
+
+    <field name="operation_manager"
+           string="Operation's Manager"/>
+    <field name="warehouse_id"
+       string="Warehouse"/>
+
+</group>
+
+
+                        <!-- RIGHT SIDE -->
+
+                        <group>
+
+                            <field name="hr_contact_name"
+                                   string="HR Contact Name"/>
+
+                            <field name="mobile"
+                                   string="Mobile"/>
+
+                            <field name="email"
+                                   string="Email"/>
+
+                            <field name="phone"
+                                   string="OHC Phone Number"/>
+
+                            <field name="tags"
+                                   string="Tags"/>
+
+
+                            <separator string=" "/>
+
+
+                            <field name="onboarding_project"
+                                   string="Onboarding Project"/>
+
+                            <field name="project_status"
+                                   string="Project Status"/>
+
+                        </group>
+
+                    </group>
+
+
+
+                    <!-- NOTEBOOK -->
+
+                    <notebook>
+
+                        <!-- STAFF -->
+
+                        <page string="Staff">
+
+                            <field name="employee_ids"
+                                readonly="1">
+
+                                <tree>
+
+                                    <field name="name"
+                                        string="Employee Name"/>
+
+                                    <field name="job_id"
+                                        string="Role / Designation"/>
+
+                                    <field name="mobile_phone"
+                                        string="Mobile No"/>
+
+                                    <field name="employee_status"
+                                        string="Status"/>
+
+
+                                </tree>
+
+                            </field>
+
+                        </page>
+
+
+                        <page string="Equipments">
+
+                            <field name="equipment_ids" readonly="1">
+
+                                <tree editable="bottom" default_order="next_calibration_date asc">
+
+                                    <field name="name" string="Equipment"/>
+
+                                    <field name="category_id"
+                                        string="Equipment Type"/>
+
+                                    <field name="location"
+                                        string="Location"/>
+
+                                    <field name="serial_no"
+                                        string="Serial Number"/>
+
+                                    <field name="assign_date"
+                                        string="Enrolled Date"/>
+                                    <field name="next_calibration_date" string="Next Calibration Date"/>
+                                    <field name="next_action_date"
+                                        string="Next Maintenance Date"/>
+                                    <field name="amc_contact"
+                                        string="AMC Contact"/>
+
+                                    <button name="action_view_calibrations" type="object" icon="fa-flask" string="Calibration"/>
+
+                  
+                                </tree>
+
+                            </field>
+
+                        </page>
+
+
+                        <page string="Ambulance">
+
+                            <field name="vehicle_ids" readonly="1">
+
+                                <tree>
+
+                                    <field name="model_id"
+                                        string="Ambulance Type"/>
+
+                                    <field name="category_id"
+                                        string="Type"/>
+
+                                    <field name="license_plate"
+                                        string="Vehicle Number"/>
+
+                                    
+                                    <field name="acquisition_date"
+                                        string="Purchase Date"/>
+                                    <field name="next_action_date"
+                                        string="Service Due"/>
+                                    
+                                    
+
+                                </tree>
+
+                            </field>
+
+                        </page>
+
+
+
+                       <page string="Contract Services">
+
+                            <group col="3">
+
+                                <!-- SERVICES -->
+                                <group string="SERVICES">
+                                    <field name="service_type"/>
+                                    <field name="ambulance_count"/>
+                            
+                                </group>
+
+
+                                <!-- STAFF -->
+                                <group string="STAFF">
+                                    <field name="doctor_count"/>
+                                    <field name="nurse_count"/>
+                                    <field name="driver_count"/>
+                                </group>
+
+
+                                <!-- EQUIPMENT -->
+                                <group string="EQUIPMENTS">
+                                    <field name="bp_machine_count"/>
+                                    <field name="ecg_machine_count"/>
+                                    <field name="aed_machine_count"/>
+                                    <field name="pulsox_count"/>
+                                    <field name="o2_kit_count"/>
+                                </group>
+
+                            </group>
+                            <group>
+                            <field name="other_services"/>
+                            </group>
+
+                        </page>
+
+                        <page string="Stock In Hand">
+
+                            <button name="action_load_stock"
+                                    string="Refresh Stock"
+                                    type="object"
+                                    class="btn-primary"/>
+
+                            <field name="stock_line_ids" readonly="1">
+                                <tree create="0" delete="0">
+                                    <field name="product_id"/>
+                                    <field name="location_id"/>
+                                    <field name="lot_id"/>
+                                    <field name="available_qty"/>
+                                    <field name="quantity"/>
+                                    <field name="removal_date"/>
+                                    <field name="uom_id"/>
+                                </tree>
+                            </field>
+
+                        </page>
+
+
+                       <page string="Additional Notes">
+
+                            <field name="additional_notes"
+                                nolabel="1"
+                                placeholder="Enter notes here..."/>
+
+                        </page>
+
+                        <page string="Checklist" name="survey_participation_tab">
+                        <field name="common_survey_participation_ids" readonly="1">
+                                <tree>
+                                    <field name="survey_id"/>
+                                    <field name="partner_id"/>
+                                    <field name="state"/>
+                                    <field name="create_date" string="Started On"/>
+                                    <field name="write_date" string="Last Updated"/>
+                                    <field name="scoring_percentage" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+
+<page string="Hospital Tie Up" name="hospital_tieup_tab">
+                            <field name="hospital_tieup_ids">
+                                <tree editable="bottom">
+                                    <field name="hospital_name" string="Hospital Name"/>
+                                    <field name="address" string="Address"/>
+                                    <field name="phone_number" string="Phone Number"/>
+                                    <field name="contact_person" string="Contact Person"/>
+                                </tree>
+                            </field>
+                        </page>
+
+
+                    </notebook>
+
+                </sheet>
+
+
+
+                <!-- CHATTER -->
+
+                <div class="oe_chatter">
+
+                    <field name="activity_ids"
+                           widget="mail_activity"/>
+
+                    <field name="message_follower_ids"
+                           widget="mail_followers"/>
+
+                    <field name="message_ids"
+                           widget="mail_thread"/>
+
+                </div>
+
+            </form>
+
+        </field>
+
+    </record>
+
+
+
+             <!--ACTION -->
+
+    <record id="action_ohc_management"
+            model="ir.actions.act_window">
+
+        <field name="name">OHC</field>
+
+        <field name="res_model">ohc.management</field>
+
+        <field name="view_mode">tree,form</field>
+
+    </record>
+
+
+
+    
+                            <!-- MENUS -->
+   
+
+    <menuitem id="menu_ohc_root"
+              name="OHC"/>
+
+
+    <menuitem id="menu_ohc_management"
+              name="OHC Management"
+              parent="menu_ohc_root"
+              action="action_ohc_management"/>
+
+    
+                    <!-- PROJECT FORM INHERIT -->
+
+
+<record id="view_project_form_inherit_ohc"
+        model="ir.ui.view">
+
+    <field name="name">project.project.form.ohc</field>
+
+    <field name="model">project.project</field>
+
+    <field name="inherit_id"
+           ref="project.edit_project"/>
+
+    <field name="arch"
+           type="xml">
+
+       
+
+        <xpath expr="//div[@name='dates']"
+               position="after">
+
+            <field name="ohc_id"/>
+
+        </xpath>
+
+    </field>
+
+</record>
+
+<record id="view_maintenance_equipment_form_inherit_ohc" model="ir.ui.view">
+    <field name="name">maintenance.equipment.form.inherit.ohc</field>
+    <field name="model">maintenance.equipment</field>
+    <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
+
+    <field name="arch" type="xml">
+
+        <xpath expr="//field[@name='employee_id']" position="after">
+
+            <field name="ohc_id"/>
+
+        </xpath>
+
+        <xpath expr="//field[@name='technician_user_id']" position="replace">
+            <field name="technician_partner_id"/>
+        </xpath>
+
+        <xpath expr="//field[@name='technician_partner_id']" position="after">
+            <field name="assign_date"/>
+        </xpath>
+
+         <xpath expr="//field[@name='maintenance_team_id']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+
+    </field>
+</record>
+
+<record id="fleet_vehicle_form_inherit_ohc" model="ir.ui.view">
+    <field name="name">fleet.vehicle.form.inherit.ohc</field>
+    <field name="model">fleet.vehicle</field>
+
+    <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+
+    <field name="arch" type="xml">
+
+        <xpath expr="//field[@name='next_assignation_date']"
+               position="after">
+
+            <field name="ohc_id"/>
+
+        </xpath>
+
+    </field>
+</record>
+
+<record id="view_fleet_odometer_tree_noedit_ohc" model="ir.ui.view">
+    <field name="name">fleet.vehicle.odometer.tree.noedit.ohc</field>
+    <field name="model">fleet.vehicle.odometer</field>
+    <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_tree"/>
+    <field name="arch" type="xml">
+        <xpath expr="//tree" position="attributes">
+            <attribute name="editable" use="remove"/>
+        </xpath>
+    </field>
+</record>
+</odoo>

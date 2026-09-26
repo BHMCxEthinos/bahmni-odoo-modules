@@ -54,7 +54,7 @@
 
                
                       <field name="ohc_warehouse_id" invisible="1"/>
-                <field name="picking_type_id"
+                <field name="picking_type_id" options="{'no_create': True, 'no_create_edit': True}"
                     domain="[('warehouse_id', '=', ohc_warehouse_id)]"
                     attrs="{
                         'invisible': [('hide_picking_type', '=', True)],
@@ -112,5 +112,19 @@
 
     </field>
 </record>
+
+<record id="view_picking_form_rename_demand" model="ir.ui.view">
+        <field name="name">stock.picking.form.rename.demand</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='product_uom_qty']" position="attributes">
+                <attribute name="string">Quantity</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
 
 </odoo>

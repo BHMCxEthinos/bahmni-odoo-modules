@@ -148,6 +148,7 @@ class SaleOrder(models.Model):
     location_id = fields.Many2one('stock.location', string="Location")
     partner_uuid = fields.Char(string='Customer UUID', store=True, readonly=True, compute='_get_partner_details')
     shop_id = fields.Many2one('sale.shop', 'Shop', required=True)
+    is_crm_quotation = fields.Boolean(string='Created from CRM', default=False, copy=False)
 
 
     @api.onchange('order_line')
@@ -510,13 +511,19 @@ class SaleOrder(models.Model):
             self.message_post(body=message)
             return False
 
-    @api.onchange('shop_id')
-    def onchange_shop_id(self):
-        self.warehouse_id = self.shop_id.warehouse_id.id
-        self.location_id = self.shop_id.location_id.id
-        self.payment_term_id = self.shop_id.payment_default_id.id
-        if self.shop_id.pricelist_id:
-            self.pricelist_id = self.shop_id.pricelist_id.id
+    @api.onchange('opportunity_id')
+    def onchange_opportunity_id_set_presales_shop(self):
+        if self.opportunity_id:
+            self.is_crm_quotation = True
+            if not self.shop_id:
+                pre_sales_shop = self.env['sale.shop'].search([('name', '=', 'Pre-Sales')], limit=1)
+                if pre_sales_shop:
+                    self.shop_id = pre_sales_shop.id
+                    self.warehouse_id = pre_sales_shop.warehouse_id.id
+                    self.location_id = pre_sales_shop.location_id.id
+                    self.payment_term_id = pre_sales_shop.payment_default_id.id
+                    if pre_sales_shop.pricelist_id:
+                        self.pricelist_id = pre_sales_shop.pricelist_id.id
 
     def validate_payment(self):
         for obj in self:

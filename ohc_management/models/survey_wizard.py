@@ -12,11 +12,23 @@ class SurveySelectionWizard(models.TransientModel):
         required=True,
     )
 
+    # survey_id = fields.Many2one(
+    #     'survey.survey',
+    #     string='Checklist Form',
+    #     required=True,
+    # )
+    # survey_id = fields.Many2one(
+    #     'survey.survey',
+    #     string='Checklist Form',
+    #     required=True,
+    #     domain="['|', ('survey_type', '!=', 'private'), ('user_id', '=', uid)]"
+    # )
     survey_id = fields.Many2one(
-        'survey.survey',
-        string='Checklist Form',
-        required=True,
-    )
+    'survey.survey',
+    string='Checklist Form',
+    required=True,
+    domain="['|', ('survey_type', '!=', 'private'), ('user_ids', 'in', [uid])]"
+)
 
     @api.onchange('ohc_id')
     def _onchange_ohc(self):
@@ -40,6 +52,8 @@ class SurveySelectionWizard(models.TransientModel):
             partner=self.env.user.partner_id,
             ohc_id=self.ohc_id.id,
         )
+        if answer.ohc_id.id != self.ohc_id.id:
+            answer.sudo().write({'ohc_id': self.ohc_id.id})
 
         return {
             'type': 'ir.actions.act_url',
@@ -49,3 +63,4 @@ class SurveySelectionWizard(models.TransientModel):
             ),
             'target': 'new',
         }
+

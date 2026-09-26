@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Employee list view - OHC column -->
+    <record id="view_employee_tree_inherit_ohc" model="ir.ui.view">
+        <field name="name">hr.employee.tree.inherit.ohc</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <field name="department_id" position="after">
+                <field name="ohc_id" widget="many2many_tags" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Equipment list view - OHC column -->
+    <record id="view_maintenance_equipment_tree_inherit_ohc" model="ir.ui.view">
+        <field name="name">maintenance.equipment.tree.inherit.ohc</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="category_id" position="after">
+                <field name="ohc_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Survey list view - OHC column -->
+    <record id="view_survey_survey_tree_inherit_ohc" model="ir.ui.view">
+        <field name="name">survey.survey.tree.inherit.ohc</field>
+        <field name="model">survey.survey</field>
+        <field name="inherit_id" ref="survey.survey_survey_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="title" position="after">
+                <field name="ohc_ids" widget="many2many_tags" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Fleet list view - OHC column -->
+    <record id="view_fleet_vehicle_tree_inherit_ohc" model="ir.ui.view">
+        <field name="name">fleet.vehicle.tree.inherit.ohc</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="model_id" position="after">
+                <field name="ohc_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

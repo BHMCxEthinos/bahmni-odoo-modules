@@ -115,80 +115,134 @@ class HelpdeskReportTemplate(models.Model):
              "[('priority', '=', '2'), ('state', '!=', 'cancelled')]"
     )
 
+    
     def action_open_report(self):
-        """Open the configured report on helpdesk tickets."""
-        self.ensure_one()
-
-        # Base action configuration
-        action = {
-            'name': self.name or _('Custom Helpdesk Report'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'helpdesk.ticket',
-            'target': 'current',
-        }
-
-        # Select base view and view_mode according to view_type / graph_type
-        if self.view_type == 'tree':
-            action['view_mode'] = 'tree,form'
-            action['view_id'] = self.env.ref(
-                'support_helpdesk_ticket.view_helpdesk_ticket_tree'
-            ).id
-        elif self.view_type == 'pivot':
-            action['view_mode'] = 'pivot,graph'
-            action['view_id'] = self.env.ref(
-                'support_helpdesk_ticket.view_helpdesk_ticket_pivot'
-            ).id
-        else:  # graph
-            action['view_mode'] = 'graph,pivot'
-            if self.graph_type == 'priority':
-                graph_view = self.env.ref(
-                    'support_helpdesk_ticket.view_helpdesk_ticket_graph_priority'
+            """Open the configured report on helpdesk tickets."""
+            self.ensure_one()
+    
+            action = {
+                'name': self.name or _('Custom Helpdesk Report'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'helpdesk.ticket',
+                'target': 'current',
+            }
+    
+            # Select views according to view_type
+            if self.view_type == 'tree':
+                tree_view = self.env.ref(
+                    'support_helpdesk_ticket.view_helpdesk_ticket_tree'
                 )
-            elif self.graph_type == 'channel':
-                graph_view = self.env.ref(
-                    'support_helpdesk_ticket.view_helpdesk_ticket_graph_channel'
+    
+                action['view_mode'] = 'tree,form'
+                action['views'] = [
+                    (tree_view.id, 'tree'),
+                    (False, 'form'),
+                ]
+    
+            elif self.view_type == 'pivot':
+                pivot_view = self.env.ref(
+                    'support_helpdesk_ticket.view_helpdesk_ticket_pivot'
                 )
-            elif self.graph_type == 'timeline':
-                graph_view = self.env.ref(
-                    'support_helpdesk_ticket.view_helpdesk_ticket_graph_timeline'
+    
+                action['view_mode'] = 'pivot,graph'
+                action['views'] = [
+                    (pivot_view.id, 'pivot'),
+                    (False, 'graph'),
+                ]
+    
+            else:  # graph
+    
+                if self.graph_type == 'priority':
+                    graph_view = self.env.ref(
+                        'support_helpdesk_ticket.view_helpdesk_ticket_graph_priority'
+                    )
+                elif self.graph_type == 'channel':
+                    graph_view = self.env.ref(
+                        'support_helpdesk_ticket.view_helpdesk_ticket_graph_channel'
+                    )
+                elif self.graph_type == 'timeline':
+                    graph_view = self.env.ref(
+                        'support_helpdesk_ticket.view_helpdesk_ticket_graph_timeline'
+                    )
+                else:  # status
+                    graph_view = self.env.ref(
+                        'support_helpdesk_ticket.view_helpdesk_ticket_graph'
+                    )
+    
+                action['view_mode'] = 'graph,pivot'
+                action['views'] = [
+                    (graph_view.id, 'graph'),
+                    (False, 'pivot'),
+                ]
+    
+            # Build domain
+            domain = []
+    
+            if self.date_from:
+                domain.append(
+                    (
+                        'create_date',
+                        '>=',
+                        datetime.combine(
+                            self.date_from,
+                            datetime.min.time()
+                        )
+                    )
                 )
-            else:  # status
-                graph_view = self.env.ref(
-                    'support_helpdesk_ticket.view_helpdesk_ticket_graph'
+    
+            if self.date_to:
+                domain.append(
+                    (
+                        'create_date',
+                        '<=',
+                        datetime.combine(
+                            self.date_to,
+                            datetime.max.time()
+                        )
+                    )
                 )
-            action['view_id'] = graph_view.id
-
-        # Build domain: date range + advanced domain
-        domain = []
-        if self.date_from:
-            domain.append(('create_date', '>=', datetime.combine(self.date_from, datetime.min.time())))
-        if self.date_to:
-            domain.append(('create_date', '<=', datetime.combine(self.date_to, datetime.max.time())))
-
-        if self.domain:
-            try:
-                extra_domain = safe_eval(self.domain)
-                if isinstance(extra_domain, (list, tuple)):
-                    domain += extra_domain
-            except Exception:
-                # Fail silently on invalid domain, keep basic filters
-                pass
-
-        if domain:
-            action['domain'] = domain
-
-        # Context for group_by and measure
-        ctx = dict(self.env.context or {})
-        if self.group_by_field:
-            ctx['group_by'] = self.group_by_field
-        if self.secondary_group_by_field:
-            ctx.setdefault('group_by', [])
-            # allow multiple group by fields when supported
-            if isinstance(ctx['group_by'], list):
-                ctx['group_by'].append(self.secondary_group_by_field)
-        if self.measure_field and self.measure_field != 'id':
-            ctx['measure'] = self.measure_field
-
-        action['context'] = ctx
-        return action
-
+    
+            # Advanced domain
+            if self.domain:
+                try:
+                    extra_domain = safe_eval(self.domain)
+    
+                    if isinstance(extra_domain, (list, tuple)):
+                        domain += extra_domain
+    
+                except Exception:
+                    # Ignore invalid advanced domain
+                    pass
+    
+            if domain:
+                action['domain'] = domain
+    
+            # Context
+            ctx = dict(self.env.context or {})
+    
+            if self.group_by_field:
+                ctx['group_by'] = self.group_by_field
+    
+            if self.secondary_group_by_field:
+                if isinstance(ctx.get('group_by'), list):
+                    ctx['group_by'].append(
+                        self.secondary_group_by_field
+                    )
+                elif ctx.get('group_by'):
+                    ctx['group_by'] = [
+                        ctx['group_by'],
+                        self.secondary_group_by_field
+                    ]
+                else:
+                    ctx['group_by'] = [
+                        self.secondary_group_by_field
+                    ]
+    
+            if self.measure_field and self.measure_field != 'id':
+                ctx['measure'] = self.measure_field
+            
+            
+    
+            action['context'] = ctx
+    
+            return action

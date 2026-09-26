@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ohc_waste_collection_tree" model="ir.ui.view">
+        <field name="name">ohc.waste.collection.tree</field>
+        <field name="model">ohc.waste.collection</field>
+        <field name="arch" type="xml">
+            <tree string="Waste Collection" default_order="date_time desc">
+                <field name="date_time"/>
+                <field name="name" string="Receipt No"/>
+                <field name="red_bags_num" string="Red Bags" sum="Total"/>
+                <field name="white_bags_num" string="White Bags" sum="Total"/>
+                <field name="black_bags_num" string="Black Bags" sum="Total"/>
+                <field name="yellow_bags_num" string="Yellow Bags" sum="Total"/>
+                <field name="blue_bags_num" string="Blue Bags" sum="Total"/>
+                <field name="total_bags" string="Total Bags" sum="Total Bags"/>
+                <field name="red_weight_num" string="Red Wt (kg)" sum="Total"/>
+                <field name="white_weight_num" string="White Wt (kg)" sum="Total"/>
+                <field name="black_weight_num" string="Black Wt (kg)" sum="Total"/>
+                <field name="yellow_weight_num" string="Yellow Wt (kg)" sum="Total"/>
+                <field name="blue_weight_num" string="Blue Wt (kg)" sum="Total"/>
+                <field name="total_weight" string="Total Weight (kg)" sum="Total Weight (kg)"/>
+                <field name="supervisor"/>
+                <field name="vehicle_number"/>
+                <field name="receipt_copy_filename" invisible="1"/>
+                <field name="receipt_copy" widget="binary" filename="receipt_copy_filename" string="Receipt"/>
+                <field name="remarks"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ohc_waste_collection_form" model="ir.ui.view">
+        <field name="name">ohc.waste.collection.form</field>
+        <field name="model">ohc.waste.collection</field>
+        <field name="arch" type="xml">
+            <form string="Waste Collection">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="ohc_id" readonly="1"/>
+                            <field name="name" string="Receipt No"/>
+                            <field name="date_time"/>
+                        </group>
+                        <group>
+                            <field name="supervisor"/>
+                            <field name="vehicle_number"/>
+                            <field name="receipt_copy" filename="receipt_copy_filename"/>
+                            <field name="receipt_copy_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Bag Counts">
+                        <group>
+                            <field name="red_bags"/>
+                            <field name="white_bags"/>
+                        </group>
+                        <group>
+                            <field name="black_bags"/>
+                            <field name="yellow_bags"/>
+                            <field name="blue_bags"/>
+                        </group>
+                    </group>
+                    <group string="Bag Weights (kg)">
+                        <group>
+                            <field name="red_weight"/>
+                            <field name="white_weight"/>
+                        </group>
+                        <group>
+                            <field name="black_weight"/>
+                            <field name="yellow_weight"/>
+                            <field name="blue_weight"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="total_bags" invisible="1"/>
+                        <field name="zero_bag_reason"
+                               attrs="{'invisible': [('total_bags', '!=', 0)], 'required': [('total_bags', '=', 0)]}"/>
+                        <field name="remarks"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ohc_waste_collection_search" model="ir.ui.view">
+        <field name="name">ohc.waste.collection.search</field>
+        <field name="model">ohc.waste.collection</field>
+        <field name="arch" type="xml">
+            <search string="Waste Collection">
+                <field name="name"/>
+                <field name="ohc_id"/>
+                <field name="supervisor"/>
+                <field name="vehicle_number"/>
+                <filter string="Last 7 Days" name="this_week"
+                        domain="[('date_time', '&gt;=', (context_today() - relativedelta(days=6)).strftime('%Y-%m-%d 00:00:00')),
+                                 ('date_time', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter string="This Month" name="this_month"
+                        domain="[('date_time', '&gt;=', (context_today()).strftime('%Y-%m-01'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="OHC" name="group_ohc" context="{'group_by': 'ohc_id'}"/>
+                    <filter string="Supervisor" name="group_rep" context="{'group_by': 'supervisor'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+</odoo>

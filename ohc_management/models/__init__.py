@@ -8,3 +8,8 @@ from . import crm_lead
 from . import survey
 from . import survey_wizard
 from . import helpdesk
+from . import crm_lead_renewal
+from . import helpdesk_ticket_hide_tree_columns
+from . import stock_replenishment_cron
+from . import expiry_alert_cron
+from . import shift

@@ -23,7 +23,7 @@
 </record>
 
 
-<menuitem id="menu_clinic_survey"
+<!-- <menuitem id="menu_clinic_survey"
           name="Clinic Survey"
           parent="survey.menu_surveys"
           action="action_clinic_survey"
@@ -33,10 +33,10 @@
           name="Ambulance Survey"
           parent="survey.menu_surveys"
           action="action_ambulance_survey"
-          sequence="6"/>
+          sequence="6"/> -->
 
 
-     <record id="survey_survey_form_inherit_ohc" model="ir.ui.view">
+     <!-- <record id="survey_survey_form_inherit_ohc" model="ir.ui.view">
 
         <field name="name">survey.survey.form.inherit.ohc</field>
 
@@ -51,11 +51,47 @@
                    position="after">
 
                 <field name="ohc_ids" widget="many2many_tags"/>
+                <field name="survey_type"/>
+                <field name="user_id" widget="many2many_tags"/>
 
             </xpath>
 
         </field>
 
-    </record>
+    </record> -->
+    <record id="survey_survey_form_inherit_ohc" model="ir.ui.view">
+
+    <field name="name">survey.survey.form.inherit.ohc</field>
+
+    <field name="model">survey.survey</field>
+
+    <field name="inherit_id" ref="survey.survey_survey_view_form"/>
+
+    <field name="arch" type="xml">
+
+        <!-- Change existing Responsible field from Many2One widget to Many2Many -->
+        
+ <xpath expr="//field[@name='active']/preceding-sibling::field[@name='user_id'][1]"
+           position="attributes">
+        <attribute name="invisible">1</attribute>
+    </xpath>
+
+    <!-- Add OHC and Type -->
+    <xpath expr="//field[@name='user_id']" position="after">
+        <field name="ohc_ids" widget="many2many_tags"/>
+        <field name="survey_type"/>
+    </xpath>
+
+    <!-- Put new Responsible before OHC -->
+    <xpath expr="//field[@name='ohc_ids']" position="before">
+        <field name="user_ids"
+               widget="many2many_tags"
+               domain="[('share', '=', False)]"/>
+    </xpath>
+
+
+    </field>
+
+</record>
 
 </odoo>

@@ -1,4 +1,4 @@
-# Copyright 2022-2024 Tecnativa - VÃ­ctor MartÃ­nez
+# Copyright 2022-2024 Tecnativa - Víctor Martínez
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
@@ -14,6 +14,16 @@ class MaintenanceEquipment(models.Model):
     )
     usage_count = fields.Integer(compute="_compute_usage_count")
     in_use = fields.Boolean(compute="_compute_in_use", store=True)
+
+    # -- Manufacturer --
+    ohc_manufacturer = fields.Char(
+        string='Manufacturer',
+    )
+
+    # -- AMC Expiry Date --
+    ohc_amc_expiry_date = fields.Date(
+        string='AMC Expiry Date',
+    )
 
     @api.depends("usage_ids")
     def _compute_usage_count(self):

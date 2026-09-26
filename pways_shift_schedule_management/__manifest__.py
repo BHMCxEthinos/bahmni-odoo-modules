@@ -4,7 +4,7 @@
     'version': '16.0.0',
     'category': "Generic Modules/Human Resources",
     'author':'Preciseways',
-    'summary': "Create shift and weekends based on define duration. shifts will not be created on leaves or holidays or weekoffs. filters your shift based on shift type or employee or department or job positions. Generate multiple excel shift roaster report",
+    'summary': "JULY 14 fixed XLS : Create shift and weekends based on define duration. shifts will not be created on leaves or holidays or weekoffs. filters your shift based on shift type or employee or department or job positions. Generate multiple excel shift roaster report",
     'description':""" Employee Shift
                         Shift Allocation
                         Shift Roaster
@@ -13,7 +13,7 @@
                         Monthly shift
                         Daily shift
                         Shift creation
-                        Automatic shift """,
+                        Automatic shift""",
     'website': "http://www.preciseways.com",
     'depends': ['hr_contract', 'hr_holidays'],
     'data': [
@@ -34,11 +34,6 @@
                 'views/week_selection_view.xml',
                 'data/mail_template.xml',
             ],
-    'assets': {
-        'web.assets_backend': [
-            'pways_shift_schedule_management/static/src/js/action_manager.js',
-        ],
-    },
     'installable': True,
     'application': True,
     'price': 45.0,

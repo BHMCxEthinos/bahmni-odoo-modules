@@ -5,6 +5,7 @@ class ComplianceRecord(models.Model):
     _name = 'clinic.compliance.record'
     _description = 'Compliance Record'
     _rec_name = 'record_name'
+    _order = 'create_date desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     record_name = fields.Char(
@@ -12,25 +13,31 @@ class ComplianceRecord(models.Model):
         compute='_compute_record_name',
         store=True)
 
-    # ondelete='set null' — OHC delete ???????? auto NULL ????
+    # ondelete='set null'   OHC delete ???????? auto NULL ????
     clinic_id = fields.Many2one(
         'ohc.management',
         string='OHC',
-        ondelete='set null')
+        required=True,
+        ondelete='restrict')
 
-    # ondelete='set null' — Compliance Master delete ???????? auto NULL ????
+    # ondelete='set null'   Compliance Master delete ???????? auto NULL ????
     master_id = fields.Many2one(
         'clinic.compliance.master',
         string='Compliance',
-        ondelete='set null')
+        required=True,
+        ondelete='restrict')
 
     status = fields.Selection([
         ('green', 'Valid'),
         ('orange', 'Expiring Soon'),
         ('red', 'Expired')
-    ], string='Status', default='green')
+    ], string='Status')
 
     expiry_date = fields.Date(string='Expiry Date')
+
+    actual_renewal_date = fields.Date(
+        string="Actual Renewal Date",
+    )
 
     document_ids = fields.Many2many(
         'ir.attachment',
@@ -39,10 +46,18 @@ class ComplianceRecord(models.Model):
         'attachment_id',
         string='Documents')
 
+    edit_unlocked = fields.Boolean(
+    string='Edit Unlocked',
+    compute='_compute_edit_unlocked')
+
+    pending_edit_reason = fields.Text(string='Pending Edit Reason')
+
+    last_edit_reason = fields.Text(string='Last Edit Reason', readonly=True)
+
     @api.depends('clinic_id', 'master_id')
     def _compute_record_name(self):
         for rec in self:
-            # Try-except — record deleted ???? ??? crash ????
+            # Try-except   record deleted ???? ??? crash ????
             try:
                 clinic = rec.with_context(
                     active_test=False).clinic_id.name \
@@ -65,25 +80,58 @@ class ComplianceRecord(models.Model):
             else:
                 rec.record_name = 'New Record'
 
-    def action_update_status(self):
+    @api.depends()
+    def _compute_edit_unlocked(self):
+        ctx_unlocked = self.env.context.get('edit_unlocked', False)
+        for rec in self:
+            rec.edit_unlocked = True if not rec.id else ctx_unlocked
+
+    def _refresh_status(self):
+        """Recompute status for a single record (shared by cron + manual refresh)."""
+        self.ensure_one()
+        if not self.expiry_date:
+            if self.status:
+                self.status = False
+            return
         today = date.today()
-        warning_days = 30
-        # sudo() — permission issues ???? ?????
+        try:
+            warning_days = self.master_id.period_days if self.master_id and self.master_id.period_days else 30
+            old_status = self.status
+            if self.expiry_date <= today:
+                self.status = 'red'
+            elif self.expiry_date <= today + timedelta(days=warning_days):
+                self.status = 'orange'
+            else:
+                self.status = 'green'
+            if self.status != old_status and self.status in ['orange', 'red']:
+                self._send_compliance_notification()
+        except Exception:
+            pass
+
+    def action_update_status(self):
+        """Cron job: bulk update status for all records with an expiry date."""
         records = self.sudo().search([('expiry_date', '!=', False)])
         for rec in records:
-            try:
-                old_status = rec.status
-                if rec.expiry_date <= today:
-                    rec.status = 'red'
-                elif rec.expiry_date <= today + timedelta(days=warning_days):
-                    rec.status = 'orange'
-                else:
-                    rec.status = 'green'
-                if rec.status != old_status and rec.status in ['orange', 'red']:
-                    rec._send_compliance_notification()
-            except Exception as e:
-                # ?? record fail ???? ??? ???? ???? ??????
-                continue
+            rec._refresh_status()
+
+    def action_refresh_record(self):
+        """Refresh button: recompute this record's status now, no cron wait."""
+        self.ensure_one()
+        self._refresh_status()
+        return True
+
+    def action_request_edit(self):
+        """List-view Edit button: opens confirmation popup before unlocking fields."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Confirm Edit',
+            'res_model': 'clinic.compliance.edit.confirm.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_record_id': self.id},
+        }
+
 
     def _send_compliance_notification(self):
         self.ensure_one()
@@ -139,7 +187,7 @@ class ComplianceRecord(models.Model):
             partner_ids = list(set(filter(None, partner_ids)))
 
             if partner_ids:
-                self.message_post(
+                self.with_context(mail_notify_force_send=False).message_post(
                     body=body,
                     subject=subject,
                     message_type='email',
@@ -149,3 +197,47 @@ class ComplianceRecord(models.Model):
         except Exception as e:
             # Notification fail ???? ??? crash ????
             pass
+
+
+    @api.model
+    def create(self, vals):
+        record = super().create(vals)
+        if vals.get('document_ids'):
+            for doc in record.document_ids:
+                record.message_post(
+                    body=f'Document uploaded: <b>{doc.name}</b> by {record.env.user.name}',
+                    message_type='comment',
+                    subtype_xmlid='mail.mt_note',
+                )
+        return record
+
+    def write(self, vals):
+        old_docs = set(self.document_ids.ids)
+        result = super().write(vals)
+
+        if 'expiry_date' in vals:
+            for rec in self:
+                rec._refresh_status()
+
+        if 'document_ids' in vals:
+            new_docs = set(self.document_ids.ids)
+            added_ids = new_docs - old_docs
+            removed_ids = old_docs - new_docs
+            if added_ids:
+                added_docs = self.env['ir.attachment'].browse(added_ids)
+                for doc in added_docs:
+                    self.message_post(
+                        body=f'Document uploaded: <b>{doc.name}</b> by {self.env.user.name}',
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_note',
+                    )
+            if removed_ids:
+                removed_docs = self.env['ir.attachment'].sudo().browse(removed_ids)
+                for doc in removed_docs:
+                    self.message_post(
+                        body=f'Document removed: <b>{doc.name}</b> by {self.env.user.name}',
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_note',
+                    )
+
+        return result      

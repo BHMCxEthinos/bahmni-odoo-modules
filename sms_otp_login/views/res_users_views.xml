@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_sms_otp" model="ir.ui.view">
+        <field name="name">res.users.form.sms.otp</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="SMS OTP" name="sms_otp_settings">
+                    <group>
+                        <field name="otp_mobile_number" placeholder="+919999999999"/>
+                        <p class="text-muted">
+                            Required for this user to log in. Use E.164 format
+                            (country code + number, e.g. +919999999999). If left
+                            empty, this user will NOT be prompted for SMS OTP.
+                        </p>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

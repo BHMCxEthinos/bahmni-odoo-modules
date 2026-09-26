@@ -18,9 +18,10 @@
 				<attribute name="domain">[('customer_rank', '&gt;', 0)]</attribute>
 			</xpath>
 			<xpath expr="//field[@name='payment_term_id']" position="after">
-				<field name="shop_id" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"/>
-			</xpath>
-
+    <field name="shop_id" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}"/>
+    <field name="is_crm_quotation" invisible="1"/>
+    <field name="opportunity_id" invisible="1"/>
+</xpath>
 
 			<xpath expr="//tree" position="attributes">
 				<attribute name="decoration-danger">product_uom_qty&lt;=0 and display_type!='line_section' and display_type!='line_note'</attribute>
@@ -101,10 +102,10 @@
 				<field name="expiry_date" readonly="1"/>
 			</xpath>
 			<xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="replace">
-				<field name="product_id" 
-				       context="{'parent_shop_id':parent.shop_id,'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"/><!--attrs="{'readonly': ['|', ('qty_invoiced', '&gt;', 0), ('procurement_ids', '!=', [])]}"-->
-			</xpath>
-			<xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="replace">
+    <field name="product_id" 
+           domain="[('categ_id.complete_name','=','All / Services / B2B Service')] if parent.is_crm_quotation else []"
+           context="{'parent_shop_id':parent.shop_id,'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"/><!--attrs="{'readonly': ['|', ('qty_invoiced', '&gt;', 0), ('procurement_ids', '!=', [])]}"-->
+</xpath>			<xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="replace">
 			    <field name="qty_delivered" invisible="context.get('hide_sale')"/>
                                         <!--attrs="{'readonly': [('qty_delivered_updateable', '=', False)]}"/-->
             </xpath>

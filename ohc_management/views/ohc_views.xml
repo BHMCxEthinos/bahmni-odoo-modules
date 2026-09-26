@@ -16,15 +16,28 @@
             <tree>
 
                 <field name="name"/>
+                <field name="ohc_id"/>
                 <field name="company_id"/>
+                <field name="state_id"/>
+                <field name="hr_contact_name"/>
+                <field name="operation_manager"/>
                 <field name="state"/>
-                <field name="mobile"/>
-                <field name="email"/>
 
             </tree>
 
         </field>
 
+    </record>
+
+    <record id="view_ohc_management_tree_no_create" model="ir.ui.view">
+        <field name="name">ohc.management.tree.no.create</field>
+        <field name="model">ohc.management</field>
+        <field name="inherit_id" ref="ohc_management.view_ohc_management_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+        </field>
     </record>
 
 
@@ -78,7 +91,8 @@
                         <button type="object"
                                 name="action_open_stock"
                                 class="oe_stat_button"
-                                icon="fa-cubes" string="Current Stock">
+                                icon="fa-cubes" string="Current Stock"
+                                groups="!ohc_management.group_ohc_hr,!ohc_management.group_ohc_salesperson_readonly,!ohc_management.group_ohc_ops_head,!ohc_management.group_ohc_qa">
 
                         
 
@@ -106,13 +120,21 @@
 
 
                         <button type="object"
-    name="action_open_documents"
-    class="oe_stat_button"
-    icon="fa-file-text">
-    <field name="compliance_document_count"
-           widget="statinfo"
-           string="Compliance"/>
-</button>                    
+                        name="action_open_documents"
+                        class="oe_stat_button"
+                        icon="fa-file-text">
+                        <field name="compliance_document_count"
+                            widget="statinfo"
+                            string="Compliance"/>
+                    </button>  
+
+                     <button
+                        type="object"
+                        name="action_dispense_medicine"
+                        class="oe_stat_button"
+                        icon="fa-medkit"
+                        string="Dispense Medicine">
+                    </button>                    
 
                     </div>
 
@@ -301,9 +323,9 @@
 
                         <page string="Equipments">
 
-                            <field name="equipment_ids">
+                            <field name="equipment_ids" readonly="1">
 
-                                <tree editable="bottom">
+                                <tree editable="bottom" default_order="next_calibration_date asc">
 
                                     <field name="name" string="Equipment"/>
 
@@ -318,13 +340,15 @@
 
                                     <field name="assign_date"
                                         string="Enrolled Date"/>
+                                    <field name="next_calibration_date" string="Next Calibration Date"/>
                                     <field name="next_action_date"
                                         string="Next Maintenance Date"/>
                                     <field name="amc_contact"
                                         string="AMC Contact"/>
 
-                                  
+                                    <button name="action_view_calibrations" type="object" icon="fa-flask" string="Calibration"/>
 
+                  
                                 </tree>
 
                             </field>
@@ -428,6 +452,31 @@
                                 placeholder="Enter notes here..."/>
 
                         </page>
+
+                        <page string="Checklist" name="survey_participation_tab">
+    <field name="common_survey_participation_ids" readonly="1">
+        <tree>
+            <field name="survey_id"/>
+            <field name="partner_id"/>
+            <field name="state"/>
+            <field name="create_date" string="Started On"/>
+            <field name="write_date" string="Last Updated"/>
+            <field name="scoring_percentage" optional="show"/>
+        </tree>
+    </field>
+</page>
+
+<page string="Hospital Tie Up" name="hospital_tieup_tab">
+                            <field name="hospital_tieup_ids">
+                                <tree editable="bottom">
+                                    <field name="hospital_name" string="Hospital Name"/>
+                                    <field name="address" string="Address"/>
+                                    <field name="phone_number" string="Phone Number"/>
+                                    <field name="contact_person" string="Contact Person"/>
+                                </tree>
+                            </field>
+                        </page>
+
 
                     </notebook>
 
@@ -562,5 +611,14 @@
     </field>
 </record>
 
-
+<record id="view_fleet_odometer_tree_noedit_ohc" model="ir.ui.view">
+    <field name="name">fleet.vehicle.odometer.tree.noedit.ohc</field>
+    <field name="model">fleet.vehicle.odometer</field>
+    <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_tree"/>
+    <field name="arch" type="xml">
+        <xpath expr="//tree" position="attributes">
+            <attribute name="editable" use="remove"/>
+        </xpath>
+    </field>
+</record>
 </odoo>

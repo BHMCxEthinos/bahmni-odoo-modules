@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Adds "Next Calibration Date" as a column on the standard Equipment
+         list view (Maintenance / Inventory > Equipment). -->
+    <record id="hr_equipment_view_tree_next_calibration" model="ir.ui.view">
+        <field name="name">maintenance.equipment.tree.next.calibration</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="next_calibration_date"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Adds a "Calibration Records" tab to the Equipment form, showing
+         the full calibration history and the computed next due date. -->
+    <record id="hr_equipment_view_form_calibration_tab" model="ir.ui.view">
+        <field name="name">maintenance.equipment.form.calibration.tab</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Calibration Records" name="calibration_records">
+                    <group>
+                        <field name="next_calibration_date"/>
+                    </group>
+                    <field name="calibration_ids">
+                        <tree decoration-danger="is_overdue" decoration-warning="is_due_soon">
+                            <field name="cal_date"/>
+                            <field name="calibrated_by"/>
+                            <field name="result"/>
+                            <field name="next_due"/>
+                            <field name="state"/>
+                            <field name="is_overdue" invisible="1"/>
+                            <field name="is_due_soon" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

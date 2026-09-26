@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_helpdesk_ticket_user,helpdesk.ticket.user,model_helpdesk_ticket,base.group_user,1,1,1,0
+access_helpdesk_ticket_user,helpdesk.ticket.user,support_helpdesk_ticket.model_helpdesk_ticket,support_helpdesk_ticket.group_helpdesk_user_new,1,1,1,0
 access_helpdesk_ticket_manager,helpdesk.ticket.manager,model_helpdesk_ticket,base.group_system,1,1,1,1
 access_helpdesk_ticket_portal,helpdesk.ticket.portal,model_helpdesk_ticket,base.group_portal,1,0,1,0
 access_helpdesk_ticket_creator,helpdesk.ticket.creator,model_helpdesk_ticket,support_helpdesk_ticket.group_helpdesk_ticket_creator,1,0,1,0

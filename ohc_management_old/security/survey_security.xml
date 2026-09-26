@@ -1,0 +1,29 @@
+<odoo>
+
+    <record id="rule_survey_private_responsible" model="ir.rule">
+
+        <field name="name">
+            Private Survey: visible only to Responsible users
+        </field>
+
+        <field name="model_id" ref="survey.model_survey_survey"/>
+
+        <!-- IMPORTANT: remove all groups from this rule -->
+        <field name="groups" eval="[(5, 0, 0)]"/>
+
+        <field name="domain_force">
+            [
+                '|',
+                    ('survey_type', '!=', 'private'),
+                    ('user_ids', 'in', [user.id])
+            ]
+        </field>
+
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+
+    </record>
+
+</odoo>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="servia_calibration_log_view_form" model="ir.ui.view">
+        <field name="name">servia.calibration.log.form</field>
+        <field name="model">servia.calibration.log</field>
+        <field name="arch" type="xml">
+            <form string="Calibration">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            class="btn-primary" attrs="{'invisible':[('state','!=','draft')]}"/>
+                    <button name="action_reset" string="Reset" type="object"
+                            attrs="{'invisible':[('state','!=','confirmed')]}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Equipment / Instrument"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="cal_date"/>
+                            <field name="calibrated_by"/>
+                            <field name="cert_no"/>
+                        </group>
+                        <group>
+                            <field name="result"/>
+                            <field name="next_due"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Notes..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="servia_calibration_log_view_list" model="ir.ui.view">
+        <field name="name">servia.calibration.log.list</field>
+        <field name="model">servia.calibration.log</field>
+        <field name="arch" type="xml">
+            <tree string="Calibration" decoration-success="state=='confirmed'" decoration-muted="state=='draft'">
+                <field name="cal_date"/>
+                <field name="name"/>
+                <field name="calibrated_by"/>
+                <field name="result"/>
+                <field name="next_due"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="servia_calibration_log_view_search" model="ir.ui.view">
+        <field name="name">servia.calibration.log.search</field>
+        <field name="model">servia.calibration.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="calibrated_by"/>
+                <field name="cert_no"/>
+                <filter name="f_result_pass" string="Pass" domain="[('result','=','pass')]"/>
+                <filter name="f_result_fail" string="Fail" domain="[('result','=','fail')]"/>
+                <filter name="f_result_adjusted" string="Adjusted" domain="[('result','=','adjusted')]"/>
+                <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state','=','confirmed')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="g_name" string="Equipment" context="{'group_by':'name'}"/>
+                    <filter name="g_result" string="Result" context="{'group_by':'result'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="servia_calibration_log_action" model="ir.actions.act_window">
+        <field name="name">Calibration</field>
+        <field name="res_model">servia.calibration.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record your first entry</p>
+            <p>Track equipment calibration and due dates.<br/>
+               Need dashboards, PDF exports, approval flows or automation?
+               <b>Servia Pro</b> and full A-Z installation are available - email <b>support@servia.ae</b>.</p>
+        </field>
+    </record>
+
+    <menuitem id="servia_calibration_log_menu_root" name="Calibration"
+              web_icon="servia_calibration_log,static/description/icon.png"/>
+    <menuitem id="servia_calibration_log_menu_main" name="Calibration"
+              parent="servia_calibration_log_menu_root" action="servia_calibration_log_action" sequence="10"/>
+    <menuitem id="servia_calibration_log_menu_setup" name="&#9889; Get Free Setup &amp; Support"
+              parent="servia_calibration_log_menu_root" action="servia_calibration_log_setup_action" sequence="80"/>
+    <menuitem id="servia_calibration_log_menu_more" name="&#9733; Servia Pro &amp; More Apps"
+              parent="servia_calibration_log_menu_root" action="servia_calibration_log_more_apps_action" sequence="90"/>
+
+</odoo>

@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 
+
 class ComplianceWizard(models.TransientModel):
     _name = 'clinic.compliance.wizard'
     _description = 'Create Compliance from Template'
@@ -18,7 +19,6 @@ class ComplianceWizard(models.TransientModel):
             self.env['clinic.compliance.record'].create({
                 'clinic_id': self.ohc_id.id,
                 'master_id': compliance.id,
-                'status': 'green',
                 'expiry_date': False,
             })
         return {
@@ -27,4 +27,30 @@ class ComplianceWizard(models.TransientModel):
             'res_model': 'clinic.compliance.record',
             'view_mode': 'tree,form',
             'domain': [('clinic_id', '=', self.ohc_id.id)],
+        }
+
+
+class ComplianceEditConfirmWizard(models.TransientModel):
+    _name = 'clinic.compliance.edit.confirm.wizard'
+    _description = 'Confirm Record Edit'
+
+    record_id = fields.Many2one(
+        'clinic.compliance.record',
+        string='Compliance Record',
+        required=True)
+
+    def action_confirm(self):
+        self.ensure_one()
+        self.record_id.message_post(
+            body=f'<p><b>Edit access granted</b></p><p>By: {self.env.user.name}</p>',
+            message_type='comment',
+            subtype_xmlid='mail.mt_note',
+        )
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'clinic.compliance.record',
+            'res_id': self.record_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {'edit_unlocked': True},
         }

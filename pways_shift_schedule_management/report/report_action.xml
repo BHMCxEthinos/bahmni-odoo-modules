@@ -16,6 +16,7 @@
             <field name="header_spacing">15</field>
             <field name="dpi">90</field>
         </record>
+        
         <record id="action_report_employee_shift_details" model="ir.actions.report">
             <field name="name">Employee Shift Details</field>
             <field name="model">shift.allocation</field>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="otp_form" name="SMS OTP Verification">
+        <t t-call="web.login_layout">
+            <form class="oe_login_form" role="form" t-attf-action="/web/login/sms_otp" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="redirect" t-att-value="redirect"/>
+
+                <t t-if="error">
+                    <p class="alert alert-danger" role="alert">
+                        <t t-esc="error"/>
+                    </p>
+                </t>
+
+                <div class="form-group field-otp">
+                    <label for="otp" class="col-form-label">
+                        Enter the OTP sent to your registered mobile number
+                    </label>
+                    <input type="text" name="otp" id="otp" class="form-control"
+                           maxlength="6" autocomplete="one-time-code"
+                           autofocus="autofocus" placeholder="6-digit code"
+                           required="required"/>
+                </div>
+
+                <div class="clearfix oe_login_buttons text-center">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Verify &amp; Login
+                    </button>
+                    <button type="submit" name="resend" value="1"
+                            class="btn btn-link btn-block">
+                        Resend OTP
+                    </button>
+                </div>
+            </form>
+        </t>
+    </template>
+</odoo>

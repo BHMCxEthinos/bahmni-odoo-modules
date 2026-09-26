@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="ohc_management.ImportRecords" owl="1">
+
+        <DropdownItem
+            t-if="state.canImport"
+            class="'o_import_menu'"
+            onSelected.bind="importRecords"
+        >
+            Import records
+        </DropdownItem>
+
+    </t>
+
+</templates>

@@ -3,7 +3,7 @@
 from odoo import models, fields,api,_
 import logging
 _logger = logging.getLogger(__name__)
-
+from odoo.exceptions import UserError
 
 class OhcManagement(models.Model):
     _name = 'ohc.management'
@@ -18,6 +18,8 @@ class OhcManagement(models.Model):
         required=True,
         tracking=True
     )
+
+    location_uuid=fields.Char(String="Bahmni location UUID")
 
     state = fields.Selection([
         ('onboarding', 'ONBOARDING'),
@@ -222,12 +224,31 @@ class OhcManagement(models.Model):
         'ohc_id',
         string='Equipments'
     )
+
+    survey_participation_ids = fields.One2many(
+    'survey.user_input',
+    'ohc_id',
+    string='Survey Participations'
+    )
+    common_survey_participation_ids = fields.One2many(
+    'survey.user_input',
+    'ohc_id',
+    string='Common Survey Participations',
+    domain=[('survey_id.survey_type', '=', 'common')],
+)
+
+    hospital_tieup_ids = fields.One2many(
+        'ohc.hospital.tieup',
+        'ohc_id',
+        string='Hospital Tie Up'
+    )
     
     vehicle_ids = fields.One2many(
     'fleet.vehicle',
     'ohc_id',
     string='Ambulances'
 )
+
     stock_line_ids = fields.One2many(
     'ohc.stock.line',
     'ohc_id',
@@ -280,7 +301,7 @@ class OhcManagement(models.Model):
         ('24x7', '24x7'),
         ('12hr', '12 Hours'),
         ('general', 'General')
-    ], string="Operations")
+    ], string="Operations",tracking=True,)
 
 
     ambulance_count = fields.Selection([
@@ -288,7 +309,7 @@ class OhcManagement(models.Model):
         ('1', '1'),
         ('2', '2'),
         ('3', '3'),
-    ], string="Ambulance")
+    ], string="Ambulance",tracking=True,)
 
 
     doctor_count = fields.Selection([
@@ -298,7 +319,7 @@ class OhcManagement(models.Model):
         ('3','3'),
         ('4','4'),
         ('5','5'),
-    ], string="Doctors")
+    ], string="Doctors",tracking=True,)
 
 
     nurse_count = fields.Selection([
@@ -308,7 +329,7 @@ class OhcManagement(models.Model):
         ('3','3'),
         ('4','4'),
         ('5','5'),
-    ], string="Nurses")
+    ], string="Nurses",tracking=True,)
 
 
     driver_count = fields.Selection([
@@ -316,26 +337,26 @@ class OhcManagement(models.Model):
         ('1','1'),
         ('2','2'),
         ('3','3'),
-    ], string="Drivers")
+    ], string="Drivers",tracking=True,)
 
 
-    bp_machine_count = fields.Integer(string="BP Machine")
+    bp_machine_count = fields.Integer(string="BP Machine",tracking=True,)
 
 
-    ecg_machine_count = fields.Integer(string="ECG Machine")
+    ecg_machine_count = fields.Integer(string="ECG Machine",tracking=True,)
 
 
-    aed_machine_count = fields.Integer(string="AED Machine")
+    aed_machine_count = fields.Integer(string="AED Machine",tracking=True,)
 
 
-    pulsox_count = fields.Integer(string="Pulsox")
+    pulsox_count = fields.Integer(string="Pulsox",tracking=True,)
 
 
-    o2_kit_count = fields.Integer(string="O2 Kit")
+    o2_kit_count = fields.Integer(string="O2 Kit",tracking=True,)
 
 
     other_services = fields.Text(
-        string="Other"
+        string="Other",tracking=True,
     )
 
     # Smart Button Actions
@@ -415,19 +436,18 @@ class OhcManagement(models.Model):
 
     def action_open_ambulance_log(self):
         self.ensure_one()
-
-        vehicle_ids = self.env['fleet.vehicle'].search([
+        vehicle_ids = self.env['fleet.vehicle'].sudo().search([
             ('ohc_id', '=', self.id)
         ]).ids
-
         return {
             'type': 'ir.actions.act_window',
             'name': 'Ambulance Logs',
             'res_model': 'fleet.vehicle.odometer',
             'view_mode': 'tree,form',
-            'domain': [('vehicle_id', 'in', vehicle_ids)],
+            'domain': [('vehicle_id', 'in', vehicle_ids)] if vehicle_ids else [('id', '=', 0)],
             'context': {
-                'search_default_group_vehicle_id': 1,
+                'default_vehicle_id': vehicle_ids[0] if len(vehicle_ids) == 1 else False,
+                'default_ohc_id': self.id,
             }
         }
 
@@ -507,6 +527,34 @@ class OhcManagement(models.Model):
                 ])
             ])
 
+    def action_dispense_medicine(self):
+            self.ensure_one()
+    
+            # Find the shop corresponding to this OHC
+            shop = self.env['sale.shop'].search([
+                ('name', '=', self.name)
+            ], limit=1)
+    
+            if not shop:
+                raise UserError(
+                    "No Sales Shop found for OHC '%s'." % self.name
+                )
+    
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Dispense Medicine',
+                'res_model': 'sale.order',
+                'view_mode': 'tree,form',
+                'domain': [
+                    ('shop_id', '=', shop.id),
+                    ('state', 'in', ['draft', 'sent']),
+                ],
+                'context': {
+                    'default_shop_id': shop.id,
+                    'create': False,
+                },
+            }
+    
     # Warehouse short code 
     @api.model
     def create(self, vals):
@@ -634,6 +682,33 @@ class OhcStockLine(models.Model):
     uom_id = fields.Many2one(
         'uom.uom',
         string='Unit of Measure'
+    )
+
+class OhcHospitalTieup(models.Model):
+    _name = 'ohc.hospital.tieup'
+    _description = 'OHC Hospital Tie Up'
+
+    ohc_id = fields.Many2one(
+        'ohc.management',
+        string='OHC',
+        ondelete='cascade'
+    )
+
+    hospital_name = fields.Char(
+        string='Hospital Name',
+        required=True
+    )
+
+    address = fields.Text(
+        string='Address'
+    )
+
+    phone_number = fields.Char(
+        string='Phone Number'
+    )
+
+    contact_person = fields.Char(
+        string='Contact Person'
     )
 
 

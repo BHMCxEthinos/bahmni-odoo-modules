@@ -11,6 +11,7 @@ import calendar
 
 import json
 import io
+from urllib.parse import urlencode as url_encode
 from odoo.http import request
 from odoo.tools import date_utils
 
@@ -31,15 +32,17 @@ class EmployeeAllocationMuster(models.TransientModel):
         data = {
             'active_record': active_record.id,
         }
+        params = {
+            'model': 'employee.allocation.muster',
+            'options': json.dumps(data, default=date_utils.json_default),
+            'output_format': 'xlsx',
+            'report_name': 'Employee Allocation Days',
+        }
+        url = '/xlsx_reports?%s' % url_encode(params)
         return {
-            'type': 'ir.actions.report',
-            'data': {
-                'model': 'employee.allocation.muster',
-                'options': json.dumps(data, default=date_utils.json_default),
-                'output_format': 'xlsx',
-                'report_name': 'Employee Allocation Days',
-            },
-            'report_type': 'xlsx'
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'self',
         }
 
     def get_xlsx_report(self, data, response):
