@@ -1,0 +1,29 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ohc_management_master,access_ohc_management_master,model_ohc_management,ohc_management.group_ohc_master,1,1,1,1
+access_ohc_staff_line,access_ohc_staff_line,model_ohc_staff_line,,1,1,1,1
+access_ohc_stock_line,access_ohc_stock_line,model_ohc_stock_line,,1,1,1,1
+access_ohc_ops_head,ohc.ops.head,model_ohc_management,ohc_management.group_ohc_ops_head,1,1,1,1
+access_ohc_nurse,ohc.nurse,model_ohc_management,ohc_management.group_ohc_nurse,1,0,0,0
+access_ohc_driver,ohc.driver,model_ohc_management,ohc_management.group_ohc_driver,1,0,0,0
+access_survey_selection_wizard,survey.selection.wizard,model_survey_selection_wizard,,1,1,1,1
+access_ohc_hospital_tieup,access_ohc_hospital_tieup,model_ohc_hospital_tieup,,1,1,1,1
+access_hr_employee_nurse,hr.employee.nurse,hr.model_hr_employee,ohc_management.group_ohc_nurse,1,0,0,0
+access_hr_department_nurse,hr.department.nurse,hr.model_hr_department,ohc_management.group_ohc_nurse,1,0,0,0
+access_hr_job_nurse,hr.job.nurse,hr.model_hr_job,ohc_management.group_ohc_nurse,1,0,0,0
+access_maintenance_equipment_user,maintenance.equipment.user,maintenance.model_maintenance_equipment,ohc_management.group_equipment_user,1,0,0,0
+access_maintenance_equipment_usage_user,maintenance.equipment.usage.user,maintenance_equipment_usage.model_maintenance_equipment_usage,ohc_management.group_equipment_user,1,0,0,0
+access_hr_employee_ohc_readonly,hr.employee OHC Read Only,hr.model_hr_employee,ohc_management.group_ohc_employee_readonly,1,0,0,0
+access_fleet_vehicle_ohc_nurse,fleet.vehicle.ohc.nurse,fleet.model_fleet_vehicle,ohc_management.group_fleet_ohc_nurse,1,0,0,0
+access_stock_picking_ohc_salesperson_readonly,stock.picking OHC Salesperson Readonly,stock.model_stock_picking,ohc_management.group_ohc_salesperson_readonly,1,0,0,0
+access_fleet_vehicle_odometer_ohc_salesperson_readonly,fleet.vehicle.odometer OHC Salesperson Readonly,fleet.model_fleet_vehicle_odometer,ohc_management.group_ohc_salesperson_readonly,1,0,0,0
+access_clinic_compliance_record_ohc_salesperson_readonly,clinic.compliance.record OHC Salesperson Readonly,clinic_compliance_pro.model_clinic_compliance_record,ohc_management.group_ohc_salesperson_readonly,1,0,0,0
+access_helpdesk_ticket_ohc_salesperson_readonly,helpdesk.ticket OHC Salesperson Readonly,support_helpdesk_ticket.model_helpdesk_ticket,ohc_management.group_ohc_salesperson_readonly,1,0,0,0
+access_survey_user_input_ohc_readonly,Survey Checklist OHC Salesperson Readonly,ohc_management.model_survey_user_input,ohc_management.group_survey_checklist_readonly,1,0,0,0
+access_stock_picking_ohc_salesperson_readonly,stock.picking OHC Salesperson Readonly,stock.model_stock_picking,ohc_management.group_ohc_salesperson_readonly,1,0,0,0
+access_ohc_management_hr,access_ohc_management_hr,model_ohc_management,ohc_management.group_ohc_hr,1,0,0,0
+access_hr_employee_ohc_hr,hr.employee hr,hr.model_hr_employee,ohc_management.group_ohc_hr,1,1,1,1
+access_fleet_vehicle_ohc_hr,fleet.vehicle.ohc.hr,fleet.model_fleet_vehicle,ohc_management.group_ohc_hr,1,1,1,0
+access_maintenance_equipment_usage_hr,maintenance.equipment.usage.hr,maintenance_equipment_usage.model_maintenance_equipment_usage,ohc_management.group_ohc_hr,1,0,0,0
+access_fleet_vehicle_odometer_ohc_hr,fleet.vehicle.odometer OHC hr,fleet.model_fleet_vehicle_odometer,ohc_management.group_ohc_hr,1,0,0,0
+access_project_ohc_hr,project.project OHC HR,project.model_project_project,ohc_management.group_ohc_hr,1,1,1,1
+access_helpdesk_ticket_ohc_master,helpdesk.ticket OHC Master,support_helpdesk_ticket.model_helpdesk_ticket,ohc_management.group_ohc_master,1,1,1,1

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ohc_management_form_inherit_waste" model="ir.ui.view">
+        <field name="name">ohc.management.form.inherit.waste.collection</field>
+        <field name="model">ohc.management</field>
+        <field name="inherit_id" ref="ohc_management.view_ohc_management_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_waste_collections" type="object"
+                        class="oe_stat_button" icon="fa-recycle">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="last_waste_pickup_datetime" widget="datetime"/>
+                        </span>
+                        <span class="o_stat_text">Waste Collection</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

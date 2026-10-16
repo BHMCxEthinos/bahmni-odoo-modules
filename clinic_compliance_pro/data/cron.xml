@@ -1,0 +1,14 @@
+<odoo>
+  <data noupdate="1">
+    <record id="ir_cron_compliance_status_update" model="ir.cron">
+      <field name="name">OHC Compliance: Update Status Daily</field>
+      <field name="model_id" ref="model_clinic_compliance_record"/>
+      <field name="state">code</field>
+      <field name="code">model.action_update_status()</field>
+      <field name="interval_number">1</field>
+      <field name="interval_type">days</field>
+      <field name="numbercall">-1</field>
+      <field name="active">True</field>
+    </record>
+  </data>
+</odoo>

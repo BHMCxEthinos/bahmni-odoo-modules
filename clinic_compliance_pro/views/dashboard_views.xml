@@ -1,0 +1,41 @@
+<odoo>
+  <record id="view_ohc_dashboard_kanban" model="ir.ui.view">
+    <field name="name">ohc.dashboard.kanban</field>
+    <field name="model">ohc.management</field>
+    <field name="arch" type="xml">
+      <kanban>
+        <field name="name"/>
+        <field name="compliance_status"/>
+        <field name="compliance_count"/>
+        <templates>
+          <t t-name="kanban-box">
+            <div class="oe_kanban_card oe_kanban_global_click">
+              <div class="p-2">
+                <strong><field name="name"/></strong>
+              </div>
+              <div class="p-2">
+                <div t-if="record.compliance_status.raw_value == 'green'" style="color: green;">🟢 All Valid</div>
+                <div t-if="record.compliance_status.raw_value == 'orange'" style="color: orange;">🟠 Some Expiring</div>
+                <div t-if="record.compliance_status.raw_value == 'red'" style="color: red;">🔴 Some Expired</div>
+                <div t-if="record.compliance_status.raw_value == 'none'" style="color: grey;">⚪ No Records</div>
+                <div>Total: <field name="compliance_count"/> records</div>
+              </div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <record id="action_compliance_dashboard" model="ir.actions.act_window">
+    <field name="name">OHC Dashboard</field>
+    <field name="res_model">ohc.management</field>
+    <field name="view_mode">kanban,tree</field>
+    <field name="view_id" ref="view_ohc_dashboard_kanban"/>
+  </record>
+
+  <menuitem id="menu_compliance_dashboard" name="Dashboard"
+    parent="menu_compliance_root"
+    action="action_compliance_dashboard"
+    sequence="4"/>
+</odoo>

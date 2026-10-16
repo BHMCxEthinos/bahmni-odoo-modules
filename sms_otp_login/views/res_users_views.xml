@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_sms_otp" model="ir.ui.view">
+        <field name="name">res.users.form.sms.otp</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="SMS OTP" name="sms_otp">
+                    <group>
+                        <field name="otp_mobile_number" placeholder="+919876543210"/>
+                    </group>
+                    <p class="text-muted">
+                        If a mobile number is set here, this user will be asked
+                        for a 6-digit SMS OTP after entering the correct
+                        password, every time they log in. Leave empty to log
+                        in with password only (not recommended).
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

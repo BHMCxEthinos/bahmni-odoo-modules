@@ -1,0 +1,45 @@
+<odoo>
+<record id="view_onboard_ohc_wizard" model="ir.ui.view">
+
+    <field name="name">onboard.ohc.wizard.form</field>
+
+    <field name="model">onboard.ohc.wizard</field>
+
+    <field name="arch" type="xml">
+
+        <form string="Onboard OHC">
+
+            <group>
+
+                <field name="ohc_name"/>
+
+                <field name="customer_id"/>
+
+                <field name="operation_manager"/>
+
+               
+
+            </group>
+
+            <footer>
+
+                <!-- <button string="Create"
+                        name="action_create"
+                        type="object"
+                        class="btn-primary"/> -->
+                <button name="action_create"
+                string="Create"
+                type="object"
+                class="btn-primary"
+                confirm="The OHC Name cannot be changed once it is created.&#10;&#10;Are you sure you want to continue?"/>
+                <button string="Cancel"
+                        special="cancel"/>
+
+            </footer>
+
+        </form>
+
+    </field>
+
+</record>
+</odoo>

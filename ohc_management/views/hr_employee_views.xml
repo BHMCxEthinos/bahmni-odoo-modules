@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit_ohc" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.ohc</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='work_email']" position="after">
+                <field name="ohc_id"/>
+                <field name="ohc_employee_id"/>
+                <field name="ohc_joining_date"/>
+                <field name="ohc_leaving_date"/>
+                <field name="ohc_compliance_status"/>
+                <field name="ohc_work_experience"/>
+                <field name="ohc_driving_licence"/>
+                <field name="ohc_commercial_licence"/>
+                <field name="ohc_pf_number"/>
+                <field name="ohc_esi_number"/>
+                <field name="ohc_locum_id"/>
+            </xpath>
+
+            <xpath expr="//field[@name='permit_no']" position="attributes">
+                <attribute name="string">Medical Registration No</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='coach_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='km_home_work']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//label[@for='km_home_work']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[@name='div_km_home_work']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+<xpath expr="//header/button[@type='action'][@groups='hr.group_hr_user']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+
+            <xpath expr="//field[@name='barcode']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//label[@for='barcode']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='barcode']/parent::div" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+<xpath expr="//field[@name='category_ids']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+
+<xpath expr="//field[@name='job_title']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+
+<xpath expr="//field[@name='bank_account_id']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+
+<xpath expr="//field[@name='lang']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+
+<xpath expr="//group[@name='identification_group']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//group[@name='application_group']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="otp_form" name="SMS OTP Login">
+        <t t-call="web.login_layout">
+            <form class="oe_login_form" role="form" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <h3>Enter the OTP sent to your mobile</h3>
+                <t t-if="error">
+                    <p style="color:#c0392b;"><t t-esc="error"/></p>
+                </t>
+                <div class="form-group field-otp">
+                    <input type="text" name="otp" class="form-control"
+                           placeholder="6-digit code" maxlength="6"
+                           autocomplete="one-time-code" autofocus="autofocus" required="required"/>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Verify &amp; Login</button>
+                <button type="submit" name="resend" value="1" class="btn btn-link btn-block">Resend OTP</button>
+            </form>
+        </t>
+    </template>
+</odoo>

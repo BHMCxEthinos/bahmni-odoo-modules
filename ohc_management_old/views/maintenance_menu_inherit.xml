@@ -1,0 +1,16 @@
+<odoo>
+    <record id="action_equipment_list" model="ir.actions.act_window">
+    <field name="name">Equipment</field>
+    <field name="res_model">maintenance.equipment</field>
+    <field name="view_mode">tree,kanban,form</field>
+    <field name="view_id" ref="maintenance.hr_equipment_view_tree"/>
+</record>
+
+<record id="maintenance.menu_maintenance_title" model="ir.ui.menu">
+    <field name="name">Equipment</field>
+    <field name="action" ref="action_equipment_list"/>
+</record>
+
+
+
+</odoo>
