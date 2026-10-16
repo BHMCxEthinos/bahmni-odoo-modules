@@ -1,8 +1,12 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+<<<<<<< HEAD
 from calendar import monthrange
 from datetime import timedelta
 WINDOW_DAYS = 31 
+=======
+
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
@@ -113,6 +117,7 @@ class HrEmployee(models.Model):
                         % (rec.ohc_employee_id, duplicate[0].name)
                     )
 
+<<<<<<< HEAD
     def _first_uncovered_date(self, start, end):
             """Return the first date between start and end with no shift
             allocation, or False if every day is covered."""
@@ -192,6 +197,8 @@ class HrEmployee(models.Model):
         }).send()
 
 
+=======
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
 class HrPlan(models.Model):
     _inherit = 'hr.plan'
 

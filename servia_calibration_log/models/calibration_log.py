@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import logging
 
 from odoo import api, fields, models
@@ -5,6 +6,11 @@ from datetime import timedelta
 
 _logger = logging.getLogger(__name__)
 
+=======
+from odoo import api, fields, models
+from datetime import timedelta
+
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
 # Key used to store the reminder window in ir.config_parameter.
 # Never hardcode the "30" days anywhere else in the module - always read it
 # from here via _get_reminder_days().
@@ -14,11 +20,15 @@ REMINDER_DAYS_DEFAULT = 30
 
 class ServiaCalibrationLog(models.Model):
     _name = 'servia.calibration.log'
+<<<<<<< HEAD
     _inherit = ['mail.thread', 'mail.activity.mixin']  
+=======
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
     _description = 'Equipment Calibration Log'
     _order = 'cal_date desc'
     _rec_name = 'equipment_id'
 
+<<<<<<< HEAD
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment', required=True,tracking=True,)
     cal_date = fields.Date('Calibration Date', default=fields.Date.context_today,tracking=True,)
     calibrated_by = fields.Char('Calibrated By',tracking=True,)
@@ -30,6 +40,19 @@ class ServiaCalibrationLog(models.Model):
     note = fields.Text('Notes',tracking=True,)
     document = fields.Binary('Certificate / Document',tracking=True,)
     document_filename = fields.Char('Document Filename',tracking=True,)
+=======
+    equipment_id = fields.Many2one('maintenance.equipment', string='Equipment', required=True)
+    cal_date = fields.Date('Calibration Date', default=fields.Date.context_today)
+    calibrated_by = fields.Char('Calibrated By')
+    cert_no = fields.Char('Certificate No')
+    result = fields.Selection([
+        ('pass', 'Pass'), ('fail', 'Fail'), ('adjusted', 'Adjusted'),
+    ], string='Result', default='pass')
+    next_due = fields.Date('Next Due')
+    note = fields.Text('Notes')
+    document = fields.Binary('Certificate / Document')
+    document_filename = fields.Char('Document Filename')
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -48,11 +71,16 @@ class ServiaCalibrationLog(models.Model):
             rec.write({'state': 'confirmed'})
 
     def action_reset(self):
+<<<<<<< HEAD
         # Resetting to Draft also clears the "reminder sent" flag, so after
         # fixing a recipient you can Reset -> Confirm the same record and
         # re-test the reminder without creating a new one.
         for rec in self:
             rec.write({'state': 'draft', 'reminder_sent': False})
+=======
+        for rec in self:
+            rec.write({'state': 'draft'})
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
 
     is_overdue = fields.Boolean(string='Overdue', compute='_compute_due_status')
     is_due_soon = fields.Boolean(string='Due Soon', compute='_compute_due_status')
@@ -133,6 +161,7 @@ class ServiaCalibrationLog(models.Model):
             if not recipient_email:
                 recipient_email = fallback_email
 
+<<<<<<< HEAD
             # Nobody to notify: do NOT mark as sent. Leave it pending so that
             # once the Operation Manager's Work Email / Technician / fallback
             # email is configured, the next cron run picks it up.
@@ -175,11 +204,30 @@ class ServiaCalibrationLog(models.Model):
             # example no outgoing mail server) is logged and the record stays
             # pending, instead of being silently marked as sent.
             try:
+=======
+            # In-app activity: assign to the Technician/Owner if there is one,
+            # else the OHC manager's user account, else the current user.
+            activity_user = responsible or (
+                ohc_manager.user_id if ohc_manager and ohc_manager.user_id else False) or self.env.user
+            equipment.activity_schedule(
+                act_type_xmlid='mail.mail_activity_data_todo',
+                date_deadline=log.next_due,
+                summary='Calibration due: %s' % (equipment.name or ''),
+                note='Next calibration date for %s is %s. Certificate no: %s' % (
+                    equipment.name or '', log.next_due, log.cert_no or 'N/A'),
+                user_id=activity_user.id,
+            )
+
+            # Actual email, using the editable template. Skipped only if
+            # there is truly no address to send to.
+            if template and recipient_email:
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
                 template.sudo().send_mail(
                     log.id,
                     force_send=True,
                     email_values={'email_to': recipient_email},
                 )
+<<<<<<< HEAD
             except Exception:
                 _logger.exception(
                     "Calibration reminder email failed for '%s' (log id %s) to %s",
@@ -189,4 +237,7 @@ class ServiaCalibrationLog(models.Model):
             _logger.info(
                 "Calibration reminder sent for '%s' (log id %s) to %s",
                 equipment.name, log.id, recipient_email)
+=======
+
+>>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
             log.reminder_sent = True
