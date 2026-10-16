@@ -7,12 +7,8 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='category_id']" position="after">
-<<<<<<< HEAD
             <field name="customer_code" placeholder="Customer code should be 7 digit"/>
 
-=======
-                <field name="customer_code"/>
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
             </xpath>
 
         </field>

@@ -11,7 +11,6 @@ class OhcManagement(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
 
-<<<<<<< HEAD
 
     
     def _get_surveys(self, param_key):
@@ -70,8 +69,6 @@ class OhcManagement(models.Model):
     #         return
     #     ohcs = self.search([])  # tighten to your Status field later
     #     ohcs._send_survey_reminder_mail(include_annual=is_year_start)
-=======
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
     # Basic Information
 
     name = fields.Char(

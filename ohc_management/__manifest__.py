@@ -14,10 +14,7 @@
         'security/ohc_rules.xml',
         'security/survey_security.xml',
         'security/ir.model.access.csv',
-<<<<<<< HEAD
         'data/cron.xml',
-=======
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
         'data/ohc_sequence.xml',
         'views/ohc_alert_crons.xml',
         'views/ohc_views.xml',
@@ -47,11 +44,8 @@
         'ohc_management/static/src/js/import_records.js',
         'ohc_management/static/src/xml/import_records.xml',
         'ohc_management/static/src/js/delete_visibility.js',
-<<<<<<< HEAD
         'ohc_management/static/src/js/stock_picking_scrap_button.js',
         'ohc_management/static/src/xml/stock_picking_list_buttons.xml',
-=======
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
         
     ],
     },

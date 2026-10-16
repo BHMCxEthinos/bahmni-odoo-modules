@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
     'name': 'SMS OTP Two-Factor Authentication',
     'version': '16.0.1.0.0',
     'summary': 'Mandatory SMS OTP 2FA for Odoo login (Nettyfish SMS provider)',
@@ -14,11 +13,6 @@ Configuration is done ONLY via environment variables in docker-compose.yml
 (NETTY_API_URL, NETTY_USER, NETTY_PASSWORD, NETTY_SENDERID, NETTY_ROUTE,
 NETTY_CHANNEL, OTP_DEBUG_LOG) - no Odoo System Parameters are used.
 """,
-=======
-    'name': 'SMS OTP Two-Factor Authentication (Nettyfish)',
-    'version': '16.0.1.0.0',
-    'summary': 'Mandatory SMS-based OTP verification after password login',
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
     'category': 'Extra Tools',
     'author': 'Custom',
     'depends': ['web', 'base'],

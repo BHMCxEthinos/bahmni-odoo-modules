@@ -1,10 +1,7 @@
 from odoo import models, fields,api
 from odoo.exceptions import ValidationError
-<<<<<<< HEAD
 from dateutil.relativedelta import relativedelta
 
-=======
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
 
 class MaintenanceEquipment(models.Model):
     _inherit = 'maintenance.equipment'
@@ -82,7 +79,6 @@ class MaintenanceEquipment(models.Model):
                 equipment.next_calibration_date = latest_log.next_due
             else:
                 equipment.next_calibration_date = False
-<<<<<<< HEAD
                 
     calibration_warning = fields.Char(
         string=" ",
@@ -97,8 +93,6 @@ class MaintenanceEquipment(models.Model):
             else:
                 equipment.calibration_warning = False
 
-=======
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
 
 
 class CalibrationLog(models.Model):
@@ -133,7 +127,6 @@ class CalibrationLog(models.Model):
     
 
 
-<<<<<<< HEAD
     next_due = fields.Date(
             string="Next Due",
             compute="_compute_next_due",
@@ -148,6 +141,3 @@ class CalibrationLog(models.Model):
                 record.next_due = record.cal_date + relativedelta(years=1)
             else:
                 record.next_due = False
-=======
-    
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292

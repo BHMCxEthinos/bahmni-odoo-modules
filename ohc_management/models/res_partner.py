@@ -83,7 +83,6 @@ class StockPicking(models.Model):
             'domain': {
                 'partner_id': domain
             }
-<<<<<<< HEAD
         }
 
     
@@ -102,6 +101,3 @@ class StockPicking(models.Model):
                     'default_location_id': self.location_dest_id.id,
                 },
             }
-=======
-        }
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292

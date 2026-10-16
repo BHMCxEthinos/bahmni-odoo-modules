@@ -6,7 +6,6 @@
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-<<<<<<< HEAD
                 <page string="SMS OTP" name="sms_otp">
                     <group>
                         <field name="otp_mobile_number" placeholder="+919876543210"/>
@@ -17,17 +16,6 @@
                         password, every time they log in. Leave empty to log
                         in with password only (not recommended).
                     </p>
-=======
-                <page string="SMS OTP" name="sms_otp_settings">
-                    <group>
-                        <field name="otp_mobile_number" placeholder="+919999999999"/>
-                        <p class="text-muted">
-                            Required for this user to log in. Use E.164 format
-                            (country code + number, e.g. +919999999999). If left
-                            empty, this user will NOT be prompted for SMS OTP.
-                        </p>
-                    </group>
->>>>>>> 8eaa44d131a3b00836da08466aa633a14b720292
                 </page>
             </xpath>
         </field>
