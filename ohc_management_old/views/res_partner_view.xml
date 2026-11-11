@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_inherit_customer_code" model="ir.ui.view">
+        <field name="name">res.partner.form.customer.code</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="customer_code"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- CRM Renewal Date field -->
+    <record id="crm_lead_form_inherit_renewal_date" model="ir.ui.view">
+        <field name="name">crm.lead.form.renewal.date</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+
+        <field name="arch" type="xml">
+
+           <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="contract_start_date"/>
+            </xpath>
+             <xpath expr="//field[@name='contract_start_date']" position="after">
+                <field name="contract_end_date"/>
+            </xpath>
+
+            <xpath expr="//field[@name='contract_end_date']" position="after">
+                <field name="renewal_date"/>
+            </xpath>
+
+        </field>
+    </record>
+
+   
+</odoo>

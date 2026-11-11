@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Helpdesk Settings View - same class/structure as General Settings (res.config.settings) -->
+    <record id="res_config_settings_view_form_inherit_helpdesk" model="ir.ui.view">
+        <field name="name">support_helpdesk_ticket.res.config.settings.view.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Helpdesk" string="Helpdesk" data-key="support_helpdesk_ticket">
+
+                    <div id="helpdesk_general_settings">
+                        <h2>General Settings</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_priority" class="o_form_label">Default Priority</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_priority" options="{'no_create': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_state" class="o_form_label">Default State</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_state"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_channel_id" class="o_form_label">Default Channel</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_channel_id" options="{'no_create': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_team_id" class="o_form_label">Default Team</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_team_id" options="{'no_create': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_category_id" class="o_form_label">Default Category</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_category_id" options="{'no_create': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_ticket_type_id" class="o_form_label">Default Ticket Type</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_ticket_type_id" options="{'no_create': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_ticket_prefix" class="o_form_label">Ticket Number Prefix</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_ticket_prefix"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_ticket_number_format" class="o_form_label">Ticket Number Format</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_ticket_number_format"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_auto_assignment">
+                        <h2>Auto-Assignment</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_auto_assign_tickets"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_auto_assign_tickets" class="o_form_label">Auto-assign tickets</label>
+                                    <div class="text-muted">Automatically assign new tickets to team members</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting" attrs="{'invisible': [('helpdesk_auto_assign_tickets', '=', False)]}">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_auto_assignment_method" class="o_form_label">Assignment method</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_auto_assignment_method"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting" attrs="{'invisible': ['|', ('helpdesk_auto_assign_tickets', '=', False), ('helpdesk_auto_assignment_method', '!=', 'load_based')]}">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_max_tickets_per_agent" class="o_form_label">Max tickets per agent</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_max_tickets_per_agent"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_sla_settings">
+                        <h2>SLA Configuration</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_sla_tracking"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_sla_tracking" class="o_form_label">Enable SLA tracking</label>
+                                    <div class="text-muted">Track response and resolution times</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting" attrs="{'invisible': [('helpdesk_enable_sla_tracking', '=', False)]}">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_response_time" class="o_form_label">Default response time (hours)</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_response_time"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting" attrs="{'invisible': [('helpdesk_enable_sla_tracking', '=', False)]}">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_resolution_time" class="o_form_label">Default resolution time (hours)</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_resolution_time"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting" attrs="{'invisible': [('helpdesk_enable_sla_tracking', '=', False)]}">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_default_sla_policy_id" class="o_form_label">Default SLA policy</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_default_sla_policy_id" options="{'no_create': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting" attrs="{'invisible': [('helpdesk_enable_sla_tracking', '=', False)]}">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_sla_working_hours"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_sla_working_hours" class="o_form_label">Use working hours</label>
+                                    <div class="text-muted">SLA counts only during working hours</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_automation">
+                        <h2>Automation</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_escalation"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_escalation" class="o_form_label">Enable escalation</label>
+                                    <div class="text-muted">Escalate tickets based on rules</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_reminders"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_reminders" class="o_form_label">Enable reminders</label>
+                                    <div class="text-muted">Send reminders for pending tickets</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_workflow"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_workflow" class="o_form_label">Enable workflow</label>
+                                    <div class="text-muted">Use custom workflow stages</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_auto_close_resolved"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_auto_close_resolved" class="o_form_label">Auto-close resolved</label>
+                                    <div class="text-muted">Automatically close resolved tickets after a delay</div>
+                                    <div class="content-group mt8" attrs="{'invisible': [('helpdesk_auto_close_resolved', '=', False)]}">
+                                        <label for="helpdesk_auto_close_days" class="o_form_label o_light_label">Days</label>
+                                        <field name="helpdesk_auto_close_days" class="oe_inline"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_notifications">
+                        <h2>Notifications</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_notify_on_assignment"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_notify_on_assignment" class="o_form_label">Notify on assignment</label>
+                                    <div class="text-muted">Notify agent when ticket is assigned</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_notify_on_status_change"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_notify_on_status_change" class="o_form_label">Notify on status change</label>
+                                    <div class="text-muted">Notify when ticket status changes</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_notify_customer_on_update"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_notify_customer_on_update" class="o_form_label">Notify customer on update</label>
+                                    <div class="text-muted">Email customer when ticket is updated</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_notify_on_sla_breach"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_notify_on_sla_breach" class="o_form_label">Notify on SLA breach</label>
+                                    <div class="text-muted">Alert when SLA is at risk or breached</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_field_requirements">
+                        <h2>Field Requirements</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_require_category"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_require_category" class="o_form_label">Require category</label>
+                                    <div class="text-muted">Category is required on tickets</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_require_priority"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_require_priority" class="o_form_label">Require priority</label>
+                                    <div class="text-muted">Priority is required on tickets</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_require_ticket_type"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_require_ticket_type" class="o_form_label">Require ticket type</label>
+                                    <div class="text-muted">Ticket type is required on tickets</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_integrations">
+                        <h2>Integrations</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_portal"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_portal" class="o_form_label">Customer portal</label>
+                                    <div class="text-muted">Let customers view their tickets</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_rating"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_rating" class="o_form_label">Ticket rating</label>
+                                    <div class="text-muted">Allow customers to rate closed tickets</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_knowledge_base"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_knowledge_base" class="o_form_label">Knowledge base</label>
+                                    <div class="text-muted">Link articles to tickets</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_social_media"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_social_media" class="o_form_label">Social media</label>
+                                    <div class="text-muted">Track social media posts as tickets</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_left_pane">
+                                    <field name="helpdesk_enable_call_logging"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_enable_call_logging" class="o_form_label">Call logging</label>
+                                    <div class="text-muted">Log phone calls on tickets</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_support_contact">
+                        <h2>Support Contact</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_support_email" class="o_form_label">Support email</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_support_email"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box o_searchable_setting">
+                                <div class="o_setting_right_pane">
+                                    <label for="helpdesk_support_phone" class="o_form_label">Support phone</label>
+                                    <div class="content-group mt8">
+                                        <field name="helpdesk_support_phone"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="helpdesk_sample_data">
+                        <h2>Sample Data</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-12 o_setting_box o_searchable_setting import_sample_data_container">
+                                <div class="o_setting_right_pane">
+                                    <p class="o_form_label mb-2">Import demo data</p>
+                                    <p class="text-muted mb-3">Load sample records into your database to explore Helpdesk features without entering data manually. Choose one option below.</p>
+                                    <div class="import_sample_data_actions mb-3">
+                                        <button string="Import Sample Data from XML" name="action_import_sample_data" type="object"
+                                            class="btn btn-primary" icon="fa-download"/>
+                                        <button string="Create Demo Records" name="action_create_demo_records" type="object"
+                                            class="btn btn-secondary create_demo_records" icon="fa-magic"/>
+                                    </div>
+                                    <div class="import_sample_data_note alert alert-info" role="alert">
+                                        <strong>What you get</strong>
+                                        <ul class="mb-0 mt-2 pl-3">
+                                            <li><strong>Import from XML</strong> — Loads data from the module’s <code>demo_data.xml</code> file (tickets, teams, categories, tags, ticket types, knowledge articles, call logs, social posts, users). Use this for a fixed, repeatable dataset.</li>
+                                            <li><strong>Create Demo Records</strong> — Creates demo records via code (similar content). Use this when you prefer programmatic data or the XML file is not used.</li>
+                                        </ul>
+                                        <p class="mb-0 mt-2 text-muted"><strong>Note:</strong> Both options create new records. For a clean test, use an empty or test database. You can delete the created records later from the respective menus.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Helpdesk Settings Action -->
+    <record id="action_helpdesk_settings" model="ir.actions.act_window">
+        <field name="name">Helpdesk Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'support_helpdesk_ticket'}</field>
+    </record>
+
+</odoo>

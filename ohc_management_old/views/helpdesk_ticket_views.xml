@@ -1,0 +1,25 @@
+<odoo>
+
+    <record id="helpdesk_ticket_form_inherit_ohc"
+            model="ir.ui.view">
+
+        <field name="name">helpdesk.ticket.form.inherit.ohc</field>
+        <field name="model">helpdesk.ticket</field>
+
+        <field name="inherit_id"
+               ref="support_helpdesk_ticket.view_helpdesk_ticket_form"/>
+
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='reference']"
+                   position="after">
+
+                <field name="ohc_id"/>
+
+            </xpath>
+
+        </field>
+
+    </record>
+
+</odoo>

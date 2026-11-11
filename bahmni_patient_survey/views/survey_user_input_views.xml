@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="survey_user_input_view_form_bahmni" model="ir.ui.view">
+        <field name="name">survey.user_input.form.bahmni</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="bahmni_patient_identifier" attrs="{'invisible': [('bahmni_patient_identifier', '=', False)]}"/>
+                <field name="bahmni_visit_uuid" attrs="{'invisible': [('bahmni_visit_uuid', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="survey_user_input_view_tree_bahmni" model="ir.ui.view">
+        <field name="name">survey.user_input.tree.bahmni</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="bahmni_patient_identifier" optional="show"/>
+                <field name="bahmni_visit_uuid" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="survey_user_input_view_search_bahmni" model="ir.ui.view">
+        <field name="name">survey.user_input.search.bahmni</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="bahmni_patient_identifier"/>
+                <field name="bahmni_visit_uuid"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

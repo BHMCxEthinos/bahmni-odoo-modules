@@ -1,0 +1,48 @@
+<odoo>
+
+    <record id="crm_lead_form_ohc" model="ir.ui.view">
+        <field name="name">crm.lead.form.ohc</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+
+        <field name="arch" type="xml">
+
+           
+
+            <xpath expr="//button[@name='action_set_lost']"
+                   position="after">
+
+                 <button name="action_onboard_ohc"
+                    type="object"
+                    string="Onboard OHC"
+                    class="btn-primary"
+                    attrs="{
+                        'invisible': [
+                            '|',
+                            '|',
+                            ('probability', '!=', 100),
+                            ('new_ohc', '=', False),
+                            ('ohc_id', '!=', False)
+                        ]
+                    }"/>
+
+            </xpath>
+
+           <xpath expr="//sheet//group" position="after">
+
+                <group string="OHC">
+
+                    <field name="new_ohc"/>
+
+                    <field name="ohc_id"
+                        attrs="{'invisible':[('new_ohc','=',False)]}"/>
+
+                </group>
+
+            </xpath>
+        </field>
+
+    </record>
+
+
+</odoo>

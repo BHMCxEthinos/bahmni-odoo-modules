@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_lead_view_form_renewal_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.form.renewal.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="(//field[@name='tag_ids'])[1]" position="after">
+                <field name="x_category" widget="badge"
+                       decoration-info="x_category == 'New'"
+                       decoration-warning="x_category == 'Renewal'"/>
+                <field name="x_parent_lead_id"/>
+                <field name="x_renewal_processed"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
