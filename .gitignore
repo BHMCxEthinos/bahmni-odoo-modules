@@ -4,3 +4,4 @@
 *.swn
 .idea/*
 **/.DS_Store
+opt/bahmni-erp/bahmni-addons-dev.tar.gz
