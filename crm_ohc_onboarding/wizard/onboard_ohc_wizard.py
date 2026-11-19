@@ -73,16 +73,16 @@ class OnboardOhcWizard(models.TransientModel):
         })
 
      
+        employees = self.operation_manager
 
-        # project = self.env['project.project'].create({
+        admin_employee = self.env.ref('base.user_admin').employee_id
+        if admin_employee:
+            employees |= admin_employee
 
-        #     'name': self.ohc_name,
-
-        #     'partner_id': self.customer_id.id,
-
-        #     'ohc_id': ohc.id,
-
-        # })
+        if employees:
+            employees.sudo().write({'ohc_id': [(4, ohc.id)]})  # (4, id) links without removing existing OHCs
+            
+      
         template = self.env['project.task.template'].browse(1)
 
         if not template.exists():
