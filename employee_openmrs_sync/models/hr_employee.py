@@ -10,6 +10,8 @@ from requests.auth import HTTPBasicAuth
 _logger = logging.getLogger(__name__)
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import os
+
 
 
 class HrEmployee(models.Model):
@@ -332,6 +334,12 @@ class HrEmployee(models.Model):
             "locations": locations
         }
 
+
+        openmrs_user = os.getenv("OPENMRS_USERNAME")
+        openmrs_password = os.getenv("OPENMRS_PASSWORD")
+
+        if not openmrs_user or not openmrs_password:
+            raise UserError("OpenMRS credentials are missing from the environment.")
     
         try:
 
@@ -343,7 +351,7 @@ class HrEmployee(models.Model):
             response = requests.post(
                 api_url,
                 json=payload,
-                auth=HTTPBasicAuth("superman", "vA2WZasrRFE="),
+                auth=HTTPBasicAuth(openmrs_user, openmrs_password),
                 headers={
                     "Accept": "application/json",
                     "Content-Type": "application/json;charset=UTF-8",
@@ -563,10 +571,16 @@ class HrEmployee(models.Model):
         _logger.info("========== OpenMRS Update Payload ==========")
         _logger.info(json.dumps(payload, indent=4))
 
+        openmrs_user = os.getenv("OPENMRS_USERNAME")
+        openmrs_password = os.getenv("OPENMRS_PASSWORD")
+        
+        if not openmrs_user or not openmrs_password:
+            raise UserError("OpenMRS credentials are missing from the environment.")
+
         response = requests.post(
                 api_url,
                 json=payload,
-                auth=HTTPBasicAuth("superman", "vA2WZasrRFE="),
+                auth=HTTPBasicAuth(openmrs_user, openmrs_password),
                 headers={
                     "Accept": "application/json",
                     "Content-Type": "application/json;charset=UTF-8",
@@ -611,6 +625,11 @@ class HrEmployee(models.Model):
             return
         username = (self.user_id.name or "").replace(" ", "")
 
+        
+        base_url = self.env['ir.config_parameter'].sudo().get_param('openmrs.login_url')
+        if not base_url:
+            raise UserError("OpenMRS login URL is not configured in System Parameters.")
+
         mail_values = {
             'subject': 'Your OpenMRS Login Credentials',
             'email_to': self.user_id.email,
@@ -624,7 +643,7 @@ class HrEmployee(models.Model):
                 <p><b>Password:</b> {self.openmrs_password}</p>
 
                 <p>
-                    <a href="https://20.204.22.106">
+                    <a href="{base_url}">
                         Login to Clinical
                     </a>
                 </p>
@@ -647,10 +666,16 @@ class HrEmployee(models.Model):
                 "OpenMRS URL is not configured."
             )
 
+        openmrs_user = os.getenv("OPENMRS_USERNAME")
+        openmrs_password = os.getenv("OPENMRS_PASSWORD")
+                
+        if not openmrs_user or not openmrs_password:
+            raise UserError("OpenMRS credentials are missing from the environment.")
+
         try:
             response = requests.options(
                 api_url,
-                auth=HTTPBasicAuth("superman", "vA2WZasrRFE="),
+                auth=HTTPBasicAuth(openmrs_user,openmrs_password),
                 timeout=10,
                 verify=False,
             )

@@ -24,17 +24,12 @@ class OhcManagement(models.Model):
 
         customer = self.company_id
 
-        # base_url = "https://20.204.22.106/openmrs/ws/rest/v1/location"
-
-        username = "superman"
-        password = "vA2WZasrRFE="
-        # openmrs_username = os.getenv("OPENMRS_USERNAME")
-        # openmrs_password = os.getenv("OPENMRS_PASSWORD")
-
-        # if not openmrs_username or not openmrs_password:
-        #     raise ValueError(
-        #         "OPENMRS_USERNAME and OPENMRS_PASSWORD must be configured"
-        #     )   
+        openmrs_user = os.getenv("OPENMRS_USERNAME")
+        openmrs_password = os.getenv("OPENMRS_PASSWORD")
+        
+        if not openmrs_user or not openmrs_password:
+            raise UserError("OpenMRS credentials are missing from the environment.")
+         
 
         headers = {
             "Accept": "application/json",
@@ -90,7 +85,7 @@ class OhcManagement(models.Model):
                 "v": "default",
                 "q": customer.name,
             },
-            auth=HTTPBasicAuth(username,password),
+            auth=HTTPBasicAuth(openmrs_user,openmrs_password),
             headers=headers,
             verify=False,
             timeout=60,
@@ -138,7 +133,7 @@ class OhcManagement(models.Model):
             response = requests.post(
                 base_url,
                 json=payload,
-                auth=HTTPBasicAuth(username, password),
+                auth=HTTPBasicAuth(openmrs_user,openmrs_password),
                 headers=headers,
                 verify=False,
                 timeout=60,
@@ -207,7 +202,7 @@ class OhcManagement(models.Model):
         response = requests.post(
             base_url,
             json=payload,
-            auth=HTTPBasicAuth(username, password),
+            auth=HTTPBasicAuth(openmrs_user, openmrs_password),
             headers=headers,
             verify=False,
             timeout=60,
