@@ -6,6 +6,7 @@ import random
 import string
 import urllib3
 import logging
+import re
 from requests.auth import HTTPBasicAuth
 _logger = logging.getLogger(__name__)
 
@@ -59,57 +60,6 @@ class HrEmployee(models.Model):
     # WRITE
     # ---------------------------------------------------------
 
-    # def write(self, vals):
-
-    #     res = super(HrEmployee, self).write(vals)
-
-    #     trigger_fields = [
-    #         'user_id',
-    #         'ohc_id',
-    #         'job_id',
-    #         'gender',
-    #         'name'
-    #     ]
-
-    #     if any(field in vals for field in trigger_fields):
-    #         for employee in self:
-    #             employee._create_openmrs_user()
-
-    #     return res
-
-    # def write(self, vals):
-
-    #     res = super(HrEmployee, self).write(vals)
-
-    #     trigger_fields = [
-    #         'user_id',
-    #         'ohc_id',
-    #         'job_id',
-    #         'gender',
-    #         'name'
-    #     ]
-
-    #     if any(field in vals for field in trigger_fields):
-
-    #         for employee in self:
-
-               
-    #             if not employee.user_id:
-    #                 continue
-
-               
-    #             if not employee.ohc_id:
-    #                 continue
-
-               
-    #             if not employee.openmrs_user_uuid:
-    #                 employee._create_openmrs_user()
-
-               
-    #             else:
-    #                 employee._update_openmrs_locations()
-
-    #     return res
     def write(self, vals):
 
         # Store employees that are active before write
@@ -122,7 +72,8 @@ class HrEmployee(models.Model):
             'ohc_id',
             'job_id',
             'gender',
-            'name'
+            'name',
+            'mobile_phone',     # NEW: re-sync when Work Mobile changes
         ]
 
         # Existing OpenMRS Sync Logic
@@ -153,7 +104,7 @@ class HrEmployee(models.Model):
                 employee._delete_openmrs_user_provider()
 
         return res
-    
+
     def _delete_openmrs_user_provider(self):
         self.ensure_one()
 
@@ -270,9 +221,6 @@ class HrEmployee(models.Model):
         # NAME
         # ---------------------------------------------------------
 
-        # employee_name = (self.name or "").strip()
-
-        # name_parts = employee_name.split()
         employee_name = (self.name or "").strip()
 
         _logger.info("Employee Name : %s", employee_name)
@@ -340,14 +288,14 @@ class HrEmployee(models.Model):
 
         if not openmrs_user or not openmrs_password:
             raise UserError("OpenMRS credentials are missing from the environment.")
-    
+
         try:
 
             _logger.info("========== OpenMRS Payload ==========")
             _logger.info(json.dumps(payload, indent=4))
             _logger.info("=====================================")
 
-        
+
             response = requests.post(
                 api_url,
                 json=payload,
@@ -360,7 +308,7 @@ class HrEmployee(models.Model):
                 timeout=60,
             )
 
-            
+
 
             if response.status_code in [200, 201, 202]:
 
@@ -386,6 +334,10 @@ class HrEmployee(models.Model):
                     'openmrs_sync_date': fields.Datetime.now(),
                     'openmrs_error': False
                 })
+
+                # NEW: push Work Mobile to OpenMRS (never raises)
+                self._sync_openmrs_phone(user_uuid)
+
                 self._send_openmrs_credentials_email()
 
                 if self.user_id:
@@ -410,7 +362,7 @@ class HrEmployee(models.Model):
 
                 return True
 
-            
+
 
             elif response.status_code == 400:
 
@@ -436,7 +388,7 @@ class HrEmployee(models.Model):
 
                 raise UserError(error_message)
 
-           
+
 
             else:
 
@@ -465,7 +417,7 @@ class HrEmployee(models.Model):
                 % str(e)
             )
 
-    
+
     def _generate_random_password(self):
         """
         Generates password like:
@@ -487,7 +439,7 @@ class HrEmployee(models.Model):
         special = "@"
 
         return first_char + lowercase + digits + special
-    
+
     def _update_openmrs_locations(self):
 
         self.ensure_one()
@@ -497,27 +449,18 @@ class HrEmployee(models.Model):
             'openmrs_user_create_url'
         )
 
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": "Basic U3VwZXJtYW46VHE2OEUwUGV9MjU2",
-        }
-
-    
         employee_name = (self.name or "").strip()
         name_parts = employee_name.split()
 
         given_name = name_parts[0] if len(name_parts) else ""
         family_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
 
-    
+
         username = (self.user_id.name or "").replace(" ", "")
 
-   
+
         system_id = self.user_id.email or self.user_id.login
-        # password = self._generate_random_password()
-       
-      
+
         gender_map = {
             "male": "M",
             "female": "F",
@@ -526,10 +469,6 @@ class HrEmployee(models.Model):
 
         gender = gender_map.get(self.gender or "", "O")
 
-        # Roles
-        # roles = self.env['ir.config_parameter'].sudo().get_param(
-        #     'employee_openmrs_sync.roles_uuid'
-        # )
         config = self.env['ir.config_parameter'].sudo()
 
         doctor_roles = config.get_param('openmrs_doctor_roles')
@@ -573,7 +512,7 @@ class HrEmployee(models.Model):
 
         openmrs_user = os.getenv("OPENMRS_USERNAME")
         openmrs_password = os.getenv("OPENMRS_PASSWORD")
-        
+
         if not openmrs_user or not openmrs_password:
             raise UserError("OpenMRS credentials are missing from the environment.")
 
@@ -600,6 +539,9 @@ class HrEmployee(models.Model):
                 'openmrs_error': False
             })
 
+            # NEW: push Work Mobile to OpenMRS (never raises)
+            self._sync_openmrs_phone(self.openmrs_user_uuid)
+
             self.message_post(
                 body="""
                 <b>Clinical User Updated Successfully</b><br/>
@@ -617,7 +559,7 @@ class HrEmployee(models.Model):
         raise UserError(
             "Unable to update OpenMRS User\n\n%s" % response.text
         )
-    
+
     def _send_openmrs_credentials_email(self):
         self.ensure_one()
 
@@ -625,7 +567,6 @@ class HrEmployee(models.Model):
             return
         username = (self.user_id.name or "").replace(" ", "")
 
-        
         base_url = self.env['ir.config_parameter'].sudo().get_param('openmrs.login_url')
         if not base_url:
             raise UserError("OpenMRS login URL is not configured in System Parameters.")
@@ -656,7 +597,7 @@ class HrEmployee(models.Model):
         mail.send()
 
     def _check_openmrs_server(self):
-        
+
         api_url = self.env['ir.config_parameter'].sudo().get_param(
             'openmrs_user_create_url'
         )
@@ -668,7 +609,7 @@ class HrEmployee(models.Model):
 
         openmrs_user = os.getenv("OPENMRS_USERNAME")
         openmrs_password = os.getenv("OPENMRS_PASSWORD")
-                
+
         if not openmrs_user or not openmrs_password:
             raise UserError("OpenMRS credentials are missing from the environment.")
 
@@ -699,3 +640,70 @@ class HrEmployee(models.Model):
             raise UserError(
                 "Unable to connect to Clinical Server.\n\n%s" % str(e)
             )
+
+    # ---------------------------------------------------------
+    # PHONE SYNC  (Odoo Work Mobile -> OpenMRS person attribute)
+    # ---------------------------------------------------------
+
+    def _sync_openmrs_phone(self, user_uuid):
+        """
+        Push hr.employee.mobile_phone to the OpenMRS 'phoneNumber'
+        person attribute (shown in Manage Person).
+        Never raises: a phone problem must not roll back the user
+        that was already created/updated in OpenMRS.
+        """
+        self.ensure_one()
+
+        try:
+            # Keep digits only, last 10 (drops +91, spaces, dashes)
+            phone = re.sub(r'\D', '', self.mobile_phone or "")[-10:]
+            if not phone or not user_uuid:
+                return
+
+            config = self.env['ir.config_parameter'].sudo()
+            base_url = (config.get_param('openmrs_base_url') or "").rstrip('/')
+            attr_type_uuid = config.get_param('openmrs_phone_attribute_uuid')
+
+            if not base_url or not attr_type_uuid:
+                _logger.warning(
+                    "OpenMRS phone sync skipped: set system parameters "
+                    "'openmrs_base_url' and 'openmrs_phone_attribute_uuid'."
+                )
+                return
+
+            openmrs_user = os.getenv("OPENMRS_USERNAME")
+            openmrs_password = os.getenv("OPENMRS_PASSWORD")
+            auth = HTTPBasicAuth(openmrs_user, openmrs_password)
+            headers = {"Accept": "application/json", "Content-Type": "application/json"}
+
+            # 1. user -> person uuid
+            r = requests.get(
+                f"{base_url}/user/{user_uuid}?v=custom:(person:(uuid))",
+                auth=auth, headers=headers, verify=False, timeout=30)
+            r.raise_for_status()
+            person_uuid = r.json()["person"]["uuid"]
+
+            # 2. existing phone attribute (update instead of duplicating)
+            r = requests.get(
+                f"{base_url}/person/{person_uuid}/attribute?v=custom:(uuid,attributeType:(uuid))",
+                auth=auth, headers=headers, verify=False, timeout=30)
+            r.raise_for_status()
+            existing = next(
+                (a for a in r.json().get("results", [])
+                 if a["attributeType"]["uuid"] == attr_type_uuid),
+                None)
+
+            body = {"attributeType": attr_type_uuid, "value": phone}
+            url = f"{base_url}/person/{person_uuid}/attribute"
+            if existing:
+                url += f"/{existing['uuid']}"       # POST here updates it
+
+            r = requests.post(url, json=body, auth=auth, headers=headers,
+                              verify=False, timeout=30)
+            if r.status_code in (200, 201):
+                _logger.info("OpenMRS phone synced for %s", self.name)
+            else:
+                _logger.error("Phone sync failed: %s %s", r.status_code, r.text)
+
+        except Exception as e:
+            _logger.error("OpenMRS phone sync error for %s: %s", self.name, e)
