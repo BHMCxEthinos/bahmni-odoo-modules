@@ -79,6 +79,17 @@
     <attribute name="invisible">1</attribute>
 </xpath>
 
+            <!-- #208 mandatory fields when creating an employee -->
+            <xpath expr="//field[@name='mobile_phone']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='job_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='gender']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+
         </field>
     </record>
     <!-- #207 hide "Received Badges" tab (from hr_gamification) on Employee forms -->
