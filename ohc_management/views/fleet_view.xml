@@ -13,6 +13,10 @@
            ref="fleet.fleet_vehicle_view_form"/>
 
     <field name="arch" type="xml">
+        <!-- #206 make Tags mandatory on vehicle form -->
+        <xpath expr="//field[@name='tag_ids']" position="attributes">
+            <attribute name="required">1</attribute>
+        </xpath>
               <xpath expr="//field[@name='vin_sn']" position="after">
     <field name="ohc_purchase_date"/>
 </xpath>
