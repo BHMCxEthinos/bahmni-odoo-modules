@@ -5,6 +5,51 @@
     <field name="view_mode">tree,form</field>
   </record>
 
+  <!-- #211 Compliance Master: list / form / search with Archive support -->
+  <record id="view_compliance_master_tree" model="ir.ui.view">
+    <field name="name">clinic.compliance.master.tree</field>
+    <field name="model">clinic.compliance.master</field>
+    <field name="arch" type="xml">
+      <tree string="Compliance Masters">
+        <field name="name"/>
+        <field name="category"/>
+        <field name="period_days"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_compliance_master_form" model="ir.ui.view">
+    <field name="name">clinic.compliance.master.form</field>
+    <field name="model">clinic.compliance.master</field>
+    <field name="arch" type="xml">
+      <form string="Compliance Master">
+        <sheet>
+          <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+            attrs="{'invisible': [('active', '=', True)]}"/>
+          <field name="active" invisible="1"/>
+          <group>
+            <field name="name"/>
+            <field name="category"/>
+            <field name="period_days"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_compliance_master_search" model="ir.ui.view">
+    <field name="name">clinic.compliance.master.search</field>
+    <field name="model">clinic.compliance.master</field>
+    <field name="arch" type="xml">
+      <search string="Search Compliance Masters">
+        <field name="name"/>
+        <field name="category"/>
+        <filter name="filter_archived" string="Archived"
+          domain="[('active', '=', False)]"/>
+      </search>
+    </field>
+  </record>
+
   <record id="view_compliance_record_search" model="ir.ui.view">
     <field name="name">compliance.record.search</field>
     <field name="model">clinic.compliance.record</field>

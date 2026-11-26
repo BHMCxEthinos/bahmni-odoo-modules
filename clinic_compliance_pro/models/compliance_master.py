@@ -5,6 +5,7 @@ class ComplianceMaster(models.Model):
     _description = 'Compliance Master'
 
     name = fields.Char(string='Name', required=True)
+    active = fields.Boolean(string='Active', default=True)  # #211 Archive / Unarchive
     category = fields.Selection([
         ('safety', 'Safety'),
         ('medical', 'Medical'),
