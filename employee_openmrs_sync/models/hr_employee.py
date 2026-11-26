@@ -14,7 +14,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import os
 
 
-
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
@@ -73,7 +72,7 @@ class HrEmployee(models.Model):
             'job_id',
             'gender',
             'name',
-            'mobile_phone',     # NEW: re-sync when Work Mobile changes
+            'mobile_phone',     # re-sync when Work Mobile changes
         ]
 
         # Existing OpenMRS Sync Logic
@@ -89,7 +88,7 @@ class HrEmployee(models.Model):
                 if not employee.ohc_id:
                     continue
 
-                # First time -> Create User
+                # First time -> Create User (or link to the existing one)
                 if not employee.openmrs_user_uuid:
                     employee._create_openmrs_user()
 
@@ -117,6 +116,76 @@ class HrEmployee(models.Model):
         # Delete OpenMRS Provider
         # if self.openmrs_provider_uuid:
         #     api.delete_provider(self.openmrs_provider_uuid)
+
+    # ---------------------------------------------------------
+    # HELPERS: REST BASE URL + EXISTING USER LOOKUP
+    # ---------------------------------------------------------
+
+    def _openmrs_rest_base_url(self):
+        """
+        REST base, e.g. https://host/openmrs/ws/rest/v1
+        Uses 'openmrs_base_url' if set, otherwise derives it from
+        'openmrs_location_create_url' (.../ws/rest/v1/location).
+        """
+        config = self.env['ir.config_parameter'].sudo()
+
+        base_url = (config.get_param('openmrs_base_url') or "").rstrip('/')
+        if base_url:
+            return base_url
+
+        location_url = (config.get_param('openmrs_location_create_url') or "").rstrip('/')
+        if location_url.endswith('/location'):
+            return location_url[:-len('/location')]
+
+        return ""
+
+    def _find_openmrs_user(self, username, system_id=None):
+        """
+        Look for an existing OpenMRS user by username (then by system id).
+        Returns the user dict {uuid, username, systemId, userProperties}
+        or False. Never raises.
+        """
+        base_url = self._openmrs_rest_base_url()
+        if not base_url:
+            _logger.warning("OpenMRS user lookup skipped: REST base URL not configured.")
+            return False
+
+        auth = HTTPBasicAuth(
+            os.getenv("OPENMRS_USERNAME"),
+            os.getenv("OPENMRS_PASSWORD")
+        )
+
+        for term in [username, system_id]:
+
+            if not term:
+                continue
+
+            try:
+                r = requests.get(
+                    f"{base_url}/user",
+                    params={
+                        "q": term,
+                        "v": "custom:(uuid,username,systemId,userProperties)"
+                    },
+                    auth=auth,
+                    headers={"Accept": "application/json"},
+                    verify=False,
+                    timeout=30,
+                )
+                r.raise_for_status()
+
+                for u in r.json().get("results", []):
+
+                    if (u.get("username") or "").lower() == (username or "").lower():
+                        return u
+
+                    if system_id and (u.get("systemId") or "").lower() == system_id.lower():
+                        return u
+
+            except Exception as e:
+                _logger.warning("OpenMRS user lookup failed for %s: %s", term, e)
+
+        return False
 
     # ---------------------------------------------------------
     # MAIN METHOD
@@ -164,6 +233,36 @@ class HrEmployee(models.Model):
             )
 
         # ---------------------------------------------------------
+        # USER ALREADY EXISTS IN OPENMRS ?  -> link + assign OHC
+        # ---------------------------------------------------------
+
+        username = (self.user_id.name or "").replace(" ", "")
+
+        existing_user = self._find_openmrs_user(username, system_id)
+
+        if existing_user:
+
+            _logger.info(
+                "OpenMRS user %s already exists (%s) - linking and "
+                "assigning OHC locations instead of creating.",
+                username, existing_user["uuid"]
+            )
+
+            self.write({
+                'openmrs_user_uuid': existing_user["uuid"],
+            })
+
+            if self.user_id:
+                self.user_id.sudo().write({
+                    'clinical_user': True
+                })
+
+            return self._update_openmrs_locations(
+                merge_existing=True,
+                existing_user=existing_user,
+            )
+
+        # ---------------------------------------------------------
         # CONFIG PARAMETERS
         # ---------------------------------------------------------
 
@@ -205,7 +304,6 @@ class HrEmployee(models.Model):
         # ---------------------------------------------------------
 
         password = self._generate_random_password()
-        username = (self.user_id.name or "").replace(" ", "")
         location_uuids = self.ohc_id.mapped('location_uuid')
 
         # Remove empty values
@@ -282,7 +380,6 @@ class HrEmployee(models.Model):
             "locations": locations
         }
 
-
         openmrs_user = os.getenv("OPENMRS_USERNAME")
         openmrs_password = os.getenv("OPENMRS_PASSWORD")
 
@@ -292,9 +389,9 @@ class HrEmployee(models.Model):
         try:
 
             _logger.info("========== OpenMRS Payload ==========")
-            _logger.info(json.dumps(payload, indent=4))
+            _logger.info(json.dumps(
+                dict(payload, password="********"), indent=4))
             _logger.info("=====================================")
-
 
             response = requests.post(
                 api_url,
@@ -308,8 +405,6 @@ class HrEmployee(models.Model):
                 timeout=60,
             )
 
-
-
             if response.status_code in [200, 201, 202]:
 
                 response_json = {}
@@ -318,7 +413,6 @@ class HrEmployee(models.Model):
                     response_json = response.json()
                 except Exception:
                     response_json = {}
-
 
                 user_uuid = (
                     response_json.get("uuid")
@@ -335,7 +429,7 @@ class HrEmployee(models.Model):
                     'openmrs_error': False
                 })
 
-                # NEW: push Work Mobile to OpenMRS (never raises)
+                # push Work Mobile to OpenMRS (never raises)
                 self._sync_openmrs_phone(user_uuid)
 
                 self._send_openmrs_credentials_email()
@@ -362,8 +456,6 @@ class HrEmployee(models.Model):
 
                 return True
 
-
-
             elif response.status_code == 400:
 
                 error_message = response.text
@@ -387,8 +479,6 @@ class HrEmployee(models.Model):
                 })
 
                 raise UserError(error_message)
-
-
 
             else:
 
@@ -417,7 +507,6 @@ class HrEmployee(models.Model):
                 % str(e)
             )
 
-
     def _generate_random_password(self):
         """
         Generates password like:
@@ -440,7 +529,14 @@ class HrEmployee(models.Model):
 
         return first_char + lowercase + digits + special
 
-    def _update_openmrs_locations(self):
+    def _update_openmrs_locations(self, merge_existing=False, existing_user=None):
+        """
+        Push the employee's OHC locations to the OpenMRS user.
+
+        merge_existing=True is used when we just linked to a user that
+        already existed in OpenMRS: the locations that user already has
+        are kept and the Odoo OHC locations are added to them.
+        """
 
         self.ensure_one()
         self._check_openmrs_server()
@@ -455,9 +551,7 @@ class HrEmployee(models.Model):
         given_name = name_parts[0] if len(name_parts) else ""
         family_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
 
-
         username = (self.user_id.name or "").replace(" ", "")
-
 
         system_id = self.user_id.email or self.user_id.login
 
@@ -491,12 +585,19 @@ class HrEmployee(models.Model):
             if ohc.location_uuid:
                 location_uuids.append(ohc.location_uuid.strip())
 
+        # Keep the locations the existing OpenMRS user already had
+        if merge_existing and existing_user:
+            props = existing_user.get("userProperties") or {}
+            for uuid in (props.get("locations") or "").split(","):
+                uuid = uuid.strip()
+                if uuid and uuid not in location_uuids:
+                    location_uuids.append(uuid)
+
         locations = ",".join(location_uuids)
 
         payload = {
             "userUuid": self.openmrs_user_uuid,
             "username": username,
-            "password": self.openmrs_password,
             "systemId": system_id,
             "person": {
                 "givenName": given_name,
@@ -507,8 +608,16 @@ class HrEmployee(models.Model):
             "locations": locations
         }
 
+        # Only send a password when we really know it (users created by
+        # Odoo). For a user that already existed in OpenMRS we do NOT
+        # send one, so their current password is not overwritten.
+        if self.openmrs_password:
+            payload["password"] = self.openmrs_password
+
         _logger.info("========== OpenMRS Update Payload ==========")
-        _logger.info(json.dumps(payload, indent=4))
+        _logger.info(json.dumps(
+            dict(payload, **({"password": "********"} if "password" in payload else {})),
+            indent=4))
 
         openmrs_user = os.getenv("OPENMRS_USERNAME")
         openmrs_password = os.getenv("OPENMRS_PASSWORD")
@@ -517,16 +626,16 @@ class HrEmployee(models.Model):
             raise UserError("OpenMRS credentials are missing from the environment.")
 
         response = requests.post(
-                api_url,
-                json=payload,
-                auth=HTTPBasicAuth(openmrs_user, openmrs_password),
-                headers={
-                    "Accept": "application/json",
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                verify=False,
-                timeout=60,
-            )
+            api_url,
+            json=payload,
+            auth=HTTPBasicAuth(openmrs_user, openmrs_password),
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json;charset=UTF-8",
+            },
+            verify=False,
+            timeout=60,
+        )
 
         _logger.info("Status Code : %s", response.status_code)
         _logger.info("Response : %s", response.text)
@@ -539,22 +648,27 @@ class HrEmployee(models.Model):
                 'openmrs_error': False
             })
 
-            # NEW: push Work Mobile to OpenMRS (never raises)
+            # push Work Mobile to OpenMRS (never raises)
             self._sync_openmrs_phone(self.openmrs_user_uuid)
 
             self.message_post(
                 body="""
-                <b>Clinical User Updated Successfully</b><br/>
+                <b>Clinical User %s Successfully</b><br/>
                 Username : %s<br/>
-                Locations : %s<br/>
-                Password: %s
+                Locations : %s
                 """ % (
+                    "Linked and Updated" if merge_existing else "Updated",
                     username,
                     ", ".join(self.ohc_id.mapped('name')),
-                self.openmrs_password)
+                )
             )
 
             return True
+
+        self.write({
+            'openmrs_sync_status': 'failed',
+            'openmrs_error': response.text
+        })
 
         raise UserError(
             "Unable to update OpenMRS User\n\n%s" % response.text
@@ -616,7 +730,7 @@ class HrEmployee(models.Model):
         try:
             response = requests.options(
                 api_url,
-                auth=HTTPBasicAuth(openmrs_user,openmrs_password),
+                auth=HTTPBasicAuth(openmrs_user, openmrs_password),
                 timeout=10,
                 verify=False,
             )

@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError,ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class OnboardOhcWizard(models.TransientModel):
@@ -16,24 +16,17 @@ class OnboardOhcWizard(models.TransientModel):
         required=True
     )
 
-    # customer_id = fields.Many2one(
-    #     'res.partner',
-    #     string="Customer",
-       
-    # )
-
     operation_manager = fields.Many2one(
         'hr.employee',
         string="Operation Manager"
     )
 
-  
     customer_id = fields.Many2one(
         'res.partner',
         string='Customer',
         required=True,
         domain=[('is_company', '=', True)]
-        )
+    )
 
     email = fields.Char()
 
@@ -51,28 +44,42 @@ class OnboardOhcWizard(models.TransientModel):
 
         lead = self.lead_id
 
-        # if lead.new_ohc:
-        #     raise UserError(_("Already onboarded."))
+        # ---------------------------------------------------------
+        # 1. DUPLICATE CHECK
+        # ---------------------------------------------------------
         existing_ohc = self.env['ohc.management'].search([
-                ('name', '=ilike', self.ohc_name.strip()),
-            ], limit=1)
-        
-        if existing_ohc:
-                    raise ValidationError(_(
-                        "OHC Name '%s' is already existing. "
-                        "Please enter a different OHC Name."
-                    ) % self.ohc_name)
-     
+            ('name', '=ilike', self.ohc_name.strip()),
+        ], limit=1)
 
+        if existing_ohc:
+            raise ValidationError(_(
+                "OHC Name '%s' is already existing. "
+                "Please enter a different OHC Name."
+            ) % self.ohc_name)
+
+        # ---------------------------------------------------------
+        # 2. CREATE OHC
+        # ---------------------------------------------------------
         ohc = self.env['ohc.management'].create({
-        'name': self.ohc_name,
-        'company_id': self.customer_id.id,  
-        'operation_manager': self.operation_manager.id,
-        'email': self.email,
-        'mobile': self.mobile,
+            'name': self.ohc_name,
+            'company_id': self.customer_id.id,
+            'operation_manager': self.operation_manager.id,
+            'email': self.email,
+            'mobile': self.mobile,
         })
 
-     
+        # ---------------------------------------------------------
+        # 3. CREATE OPENMRS LOCATION  (MUST BE BEFORE LINKING EMPLOYEES)
+        #
+        # Linking ohc_id on hr.employee triggers the OpenMRS user
+        # creation, which needs ohc.location_uuid. So the location
+        # has to exist (and its UUID be saved) before that happens.
+        # ---------------------------------------------------------
+        ohc.sync_openmrs_location()
+
+        # ---------------------------------------------------------
+        # 4. LINK EMPLOYEES TO OHC  (now location_uuid is available)
+        # ---------------------------------------------------------
         employees = self.operation_manager
 
         admin_employee = self.env.ref('base.user_admin').employee_id
@@ -80,9 +87,12 @@ class OnboardOhcWizard(models.TransientModel):
             employees |= admin_employee
 
         if employees:
-            employees.sudo().write({'ohc_id': [(4, ohc.id)]})  # (4, id) links without removing existing OHCs
-            
-      
+            # (4, id) links without removing existing OHCs
+            employees.sudo().write({'ohc_id': [(4, ohc.id)]})
+
+        # ---------------------------------------------------------
+        # 5. PROJECT TEMPLATE
+        # ---------------------------------------------------------
         template = self.env['project.task.template'].browse(1)
 
         if not template.exists():
@@ -90,10 +100,8 @@ class OnboardOhcWizard(models.TransientModel):
                 "New OHC onboarding template was not found."
             ))
 
-       
-
         # ---------------------------------------------------------
-        # 3. CREATE PROJECT
+        # 6. CREATE PROJECT
         # ---------------------------------------------------------
         project = self.env['project.project'].create({
             'name': self.ohc_name,
@@ -103,24 +111,18 @@ class OnboardOhcWizard(models.TransientModel):
             'project_template_id': template.id,
         })
 
-        # ---------------------------------------------------------
-        # 4. CALL THE SAME METHOD AS
-        #    CREATE PROJECT FROM TEMPLATE
-        # ---------------------------------------------------------
+        # Same method as "Create Project from Template"
         project.action_create_project_from_template()
-
-
-       
 
         project.write({
             'is_favorite': False,
         })
 
-     
-        
-        
-
+        # ---------------------------------------------------------
+        # 7. WAREHOUSE, SHOP, ORDER TYPE MAPPING
+        # ---------------------------------------------------------
         warehouse = self.env["stock.warehouse"].create_ohc_warehouse(ohc)
+
         shop = self.env["sale.shop"].create_ohc_shop(
             ohc,
             warehouse
@@ -132,19 +134,12 @@ class OnboardOhcWizard(models.TransientModel):
             warehouse,
         )
 
-       
-
-        ohc.sync_openmrs_location()
-
-       
-
+        # ---------------------------------------------------------
+        # 8. LINK LEAD
+        # ---------------------------------------------------------
         lead.write({
-
             'ohc_id': ohc.id,
-
             'project_id': project.id,
-            
-
         })
 
         return {
