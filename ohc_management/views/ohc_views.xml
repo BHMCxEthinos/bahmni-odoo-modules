@@ -621,6 +621,22 @@
         <xpath expr="//tree" position="attributes">
             <attribute name="editable" use="remove"/>
         </xpath>
+        <!-- #204 hide Date, Odometer Value, Unit in list -->
+        <xpath expr="//field[@name='date']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='value']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='unit']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <!-- #205 show trip columns -->
+        <xpath expr="//field[@name='driver_id']" position="after">
+            <field name="ohc_departure_start_km"/>
+            <field name="ohc_arrival_end_km"/>
+            <field name="ohc_arrival_time" widget="float_time"/>
+        </xpath>
     </field>
 </record>
 

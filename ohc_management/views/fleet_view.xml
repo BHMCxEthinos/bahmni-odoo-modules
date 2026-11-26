@@ -93,6 +93,17 @@
              <attribute name="domain">[('ohc_id', '=', context.get('default_ohc_id', False))]</attribute>
         </xpath>
 
+        <!-- #204 hide Odometer Value (label + value/unit row) and Date -->
+        <xpath expr="//label[@for='value']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='value']/parent::div" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='date']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+
         <!-- Move the custom groups outside of the top field group -->
         <xpath expr="//sheet/group[1]" position="after">
             <group>
