@@ -7,7 +7,7 @@
     'summary': 'OHC Management Module',
     'description': 'Manage OHC Operations',
     'author': 'Pritee Rathod',
-    'depends': ['base', 'mail', 'project', 'hr', 'maintenance', 'fleet', 'hr_fleet', 'sale', 'crm','servia_calibration_log'],
+    'depends': ['base', 'mail', 'project', 'hr', 'maintenance', 'fleet', 'hr_fleet', 'sale', 'crm','servia_calibration_log', 'hr_gamification'],
     'data': [
         
         'security/ohc_groups.xml',
